@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Custom Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f0f;
+            color: #e5e5e5;
+        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Animations */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+        }
+        .ai-thinking {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes typing {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .message-bubble {
+            position: relative;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        
+        /* Indian Theme Accents */
+        .saffron { color: #ff9933; }
+        .green { color: #138808; }
+        .chakra { color: #000080; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="glass-panel border-b border-white/10 px-6 py-4 flex items-center justify-between shrink-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-purple-500/30" id="botAvatar">
+                AI
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-white" id="botName">Your Assistant</h1>
+                <div class="flex items-center gap-2 text-xs text-gray-400">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span id="botStatus">Online • Ready to help</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <button onclick="toggleSettings()" class="p-2 hover:bg-white/10 rounded-lg transition-colors" title="Settings">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
+            <button onclick="clearChat()" class="p-2 hover:bg-white/10 rounded-lg transition-colors" title="Clear Chat">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Settings Panel (Hidden by default) -->
+    <div id="settingsPanel" class="hidden absolute top-16 right-6 w-80 glass-panel rounded-xl border border-white/10 shadow-2xl z-50 p-4">
+        <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            Bot Configuration
+        </h3>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Bot Name</label>
+                <input type="text" id="configName" value="Your Assistant" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+            </div>
+            
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Bot Role/Persona</label>
+                <textarea id="configRole" rows="3" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 mono text-xs">You are a helpful AI assistant. You provide detailed, accurate information and help users with their questions.</textarea>
+            </div>
+            
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">API Provider</label>
+                <select id="configAPI" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    <option value="openai">OpenAI (GPT-4)</option>
+                    <option value="anthropic">Anthropic (Claude)</option>
+                    <option value="local">Local Storage (Simulated)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">API Key</label>
+                <input type="password" id="configKey" placeholder="sk-..." class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 mono">
+            </div>
+            
+            <button onclick="saveConfig()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                Save Configuration
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div id="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth">
+        <!-- Welcome Message -->
+        <div class="flex gap-4 items-start">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                AI
+            </div>
+            <div class="message-bubble glass-panel rounded-2xl rounded-tl-sm px-5 py-3 text-gray-200 leading-relaxed">
+                <p class="mb-2">Namaste! 🙏 I'm your AI assistant, ready to help you with anything you need.</p>
+                <p class="text-sm text-gray-400">I can help you with coding, writing, analysis, learning, and much more. What would you like to explore today?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="glass-panel border-t border-white/10 p-4 shrink-0">
+        <div class="max-w-4xl mx-auto relative">
+            <!-- Suggestion Chips -->
+            <div class="flex gap-2 mb-3 overflow-x-auto pb-2 scrollbar-hide" id="suggestionChips">
+                <button onclick="quickAsk('Explain quantum computing simply')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
+                    Explain quantum computing
+                </button>
+                <button onclick="quickAsk('Write a Python script for web scraping')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
+                    Python web scraper
+                </button>
+                <button onclick="quickAsk('Help me write a professional email')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
+                    Professional email
+                </button>
+                <button onclick="quickAsk('What are the best practices for React?')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
+                    React best practices
+                </button>
+            </div>
+            
+            <div class="relative flex items-end gap-2 bg-black/50 border border-white/20 rounded-2xl p-2 focus-within:border-indigo-500 transition-colors">
+                <textarea 
+                    id="userInput" 
+                    rows="1" 
+                    placeholder="Message your assistant..." 
+                    class="flex-1 bg-transparent border-none resize-none max-h-32 px-3 py-2 text-white placeholder-gray-500 focus:outline-none text-sm"
+                    onkeydown="handleKeyDown(event)"
+                    oninput="autoResize(this)"
+                ></textarea>
+                
+                <div class="flex items-center gap-1 pb-1">
+                    <button onclick="attachFile()" class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Attach file">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    </button>
+                    <button onclick="sendMessage()" id="sendBtn" class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-center">AI can make mistakes. Please verify important information.</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        let config = {
+            name: 'Your Assistant',
+            role: 'You are a helpful AI assistant. You provide detailed, accurate information and help users with their questions.',
+            apiProvider: 'local',
+            apiKey: ''
+        };
+
+        // Chat History
+        let chatHistory = [];
+        let isProcessing = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            document.getElementById('userInput').focus();
+        });
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function saveConfig() {
+            config.name = document.getElementById('configName').value || 'Your Assistant';
+            config.role = document.getElementById('configRole').value;
+            config.apiProvider = document.getElementById('configAPI').value;
+            config.apiKey = document.getElementById('configKey').value;
+            
+            localStorage.setItem('aiBotConfig', JSON.stringify(config));
+            
+            document.getElementById('botName').textContent = config.name;
+            document.getElementById('botAvatar').textContent = config.name.substring(0, 2).toUpperCase();
+            
+            toggleSettings();
+            showNotification('Configuration saved!');
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem('aiBotConfig');
+            if(saved) {
+                config = JSON.parse(saved);
+                document.getElementById('configName').value = config.name;
+                document.getElementById('configRole').value = config.role;
+                document.getElementById('configAPI').value = config.apiProvider;
+                document.getElementById('configKey').value = config.apiKey;
+                document.getElementById('botName').textContent = config.name;
+                document.getElementById('botAvatar').textContent = config.name.substring(0, 2).toUpperCase();
+            }
+        }
+
+        function handleKeyDown(e) {
+            if(e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
+        }
+
+        function quickAsk(text) {
+            document.getElementById('userInput').value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if(!message || isProcessing) return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // Show typing indicator
+            isProcessing = true;
+            showTyping();
+            
+            // Process message
+            try {
+                const response = await processWithAI(message);
+                removeTyping();
+                addMessage(response, 'assistant');
+            } catch(error) {
+                removeTyping();
+                addMessage('I apologize, but I encountered an error processing your request. Please try again.', 'assistant');
+            }
+            
+            isProcessing = false;
+        }
+
+        async function processWithAI(message) {
+            // Check for specific patterns first (local intelligence)
+            const lowerMsg = message.toLowerCase();
+            
+            // Code detection
+            if(lowerMsg.includes('code') || lowerMsg.includes('script') || lowerMsg.includes('program') || lowerMsg.includes('function')) {
+                return generateCodeResponse(message);
+            }
+            
+            // Explanation request
+            if(lowerMsg.includes('explain') || lowerMsg.includes('what is') || lowerMsg.includes('how does')) {
+                return generateExplanation(message);
+            }
+            
+            // Writing help
+            if(lowerMsg.includes('write') || lowerMsg.includes('draft') || lowerMsg.includes('email') || lowerMsg.includes('letter')) {
+                return generateWriting(message);
+            }
+            
+            // Indian context awareness
+            if(lowerMsg.includes('india') || lowerMsg.includes('indian') || lowerMsg.includes('hindi') || lowerMsg.includes('rupee')) {
+                return generateIndianContextResponse(message);
+            }
+            
+            // General conversational response
+            return generateGeneralResponse(message);
+        }
+
+        function generateCodeResponse(message) {
+            const responses = [
+                `I'd be happy to help you with that code! Here's a solution:\n\n\`\`\`python\n# Example implementation\ndef solution():\n    print("Processing your request...")\n    # Add your logic here\n    return "Success"\n\nresult = solution()\n\`\`\`\n\nWould you like me to explain how this works or modify it for your specific use case?`,
+                
+                `Here's a code snippet that should help:\n\n\`\`\`javascript\n// Modern approach\nasync function handleRequest() {\n  try {\n    const data = await fetchData();\n    return processData(data);\n  } catch (error) {\n    console.error('Error:', error);\n  }\n}\n\`\`\`\n\nLet me know if you need this in a different programming language!`,
+                
+                `I can help with that! Here's a clean implementation:\n\n\`\`\`python\nclass Solution:\n    def __init__(self):\n        self.data = []\n    \n    def process(self, input_data):\n        # Your processing logic\n        return transformed_data\n\`\`\`\n\nWould you like me to add error handling or optimize this further?`
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        function generateExplanation(message) {
+            return `Great question! Let me break this down for you:
+
+**Key Concepts:**
+1. **Fundamental Principle**: At its core, this works by...
+2. **Main Components**: There are three essential parts...
+3. **How They Interact**: These components communicate through...
+
+**Real-world Analogy:**
+Think of it like a ${getRandomAnalogy()}...
+
+**Practical Example:**
+${getRandomExample()}
+
+Would you like me to dive deeper into any specific aspect, or shall I provide a practical implementation?`;
+        }
+
+        function generateWriting(message) {
+            return `Here's a draft for you:
+
+---
+
+**Subject:** ${extractSubject(message)}
+
+Dear [Name],
+
+I hope this message finds you well. I'm writing regarding ${extractTopic(message)}.
+
+[Main content based on your specific requirements would go here, tailored to tone and context]
+
+Please let me know if you need any adjustments to the tone or content.
+
+Best regards,
+[Your Name]
+
+---
+
+Would you like me to make this more formal, casual, or adjust anything specific?`;
+        }
+
+        function generateIndianContextResponse(message) {
+            return `Absolutely! As someone familiar with the Indian context, I can help with that.
+
+**Relevant Information:**
+• **Local Context**: In India, this is particularly relevant because...
+• **Practical Considerations**: You'll want to keep in mind factors like...
+• **Resources**: Some useful India-specific resources include...
+
+**Cultural Nuance:**
+Given India's diverse landscape, it's important to consider regional variations...
+
+**Next Steps:**
+1. Research local regulations/guidelines
+2. Connect with relevant communities
+3. Adapt strategy for Indian market
+
+Would you like specific information about any particular state or aspect?`;
+        }
+
+        function generateGeneralResponse(message) {
+            const responses = [
+                `That's an interesting topic! Here's what I know:
+
+**Overview:**
+This is a fascinating area with several key aspects worth considering.
+
+**Key Points:**
+• First, it's important to understand the fundamentals
+• Second, practical application matters significantly  
+• Third, staying updated with recent developments is crucial
+
+**My Recommendation:**
+Start with the basics, then gradually move to advanced concepts. Practice consistently, and don't hesitate to ask specific questions as you progress.
+
+What specific aspect would you like to explore further?`,
+                
+                `I'd love to help you with that! Based on your question, here are my thoughts:
+
+**Understanding Your Need:**
+It seems like you're looking for practical, actionable advice.
+
+**Here's My Suggestion:**
+1. Break down the problem into smaller parts
+2. Tackle each component systematically
+3. Review and iterate based on feedback
+
+**Additional Resources:**
+I can provide specific examples, code snippets, or detailed explanations depending on what would be most helpful.
+
+What would be most useful for you right now?`,
+                
+                `Great question! Let me provide a comprehensive answer:
+
+**The Short Answer:**
+Yes, this is definitely possible and here's how you can approach it.
+
+**Detailed Breakdown:**
+The process involves several steps, each building upon the previous one. The key is to start with a solid foundation.
+
+**Common Pitfalls to Avoid:**
+• Rushing through the basics
+• Ignoring edge cases
+• Not testing thoroughly
+
+**Pro Tip:**
+Document your process as you go - it will save you time later!
+
+Does this help? Feel free to ask follow-up questions!`
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        function getRandomAnalogy() {
+            const analogies = ['postal delivery system', 'restaurant kitchen', 'library organization', 'traffic management', 'cellular network'];
+            return analogies[Math.floor(Math.random() * analogies.length)];
+        }
+
+        function getRandomExample() {
+            const examples = [
+                'Consider a scenario where you need to process 1000 records...',
+                'Imagine you\'re building a feature for a mobile app...',
+                'Think about automating a repetitive task at work...',
+                'Picture a system that needs to handle real-time data...'
+            ];
+            return examples[Math.floor(Math.random() * examples.length)];
+        }
+
+        function extractSubject(message) {
+            // Simple extraction logic
+            if(message.toLowerCase().includes('job')) return 'Application for Position';
+            if(message.toLowerCase().includes('meeting')) return 'Meeting Request';
+            if(message.toLowerCase().includes('proposal')) return 'Project Proposal';
+            return 'Regarding Your Request';
+        }
+
+        function extractTopic(message) {
+            const words = message.split(' ');
+            return words.slice(0, 5).join(' ') + '...';
+        }
+
+        function addMessage(content, role) {
+            const container = document.getElementById('chatContainer');
+            const div = document.createElement('div');
+            div.className = 'flex gap-4 items-start animate-fade-in';
+            
+            if(role === 'user') {
+                div.innerHTML = `
+                    <div class="flex-1 flex justify-end">
+                        <div class="message-bubble bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-5 py-3 max-w-[80%]">
+                            <p class="leading-relaxed">${escapeHtml(content)}</p>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                        You
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                        ${config.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div class="message-bubble glass-panel text-gray-200 rounded-2xl rounded-tl-sm px-5 py-3 max-w-[80%]">
+                        ${formatContent(content)}
+                    </div>
+                `;
+            }
+            
+            container.appendChild(div);
+            scrollToBottom();
+            
+            // Save to history
+            chatHistory.push({role, content, timestamp: new Date()});
+        }
+
+        function formatContent(content) {
+            // Format code blocks
+            content = content.replace(/```(\w+)?\n([\s\S]*?)```/g, '<div class="code-block p-4 my-2 overflow-x-auto"><code class="text-sm mono text-green-400">$2</code></div>');
+            
+            // Format inline code
+            content = content.replace(/`([^`]+)`/g, '<code class="bg-white/10 px-1.5 py-0.5 rounded text-sm mono text-pink-400">$1</code>');
+            
+            // Format bold
+            content = content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>');
+            
+            // Format bullet points
+            content = content.replace(/• (.*)/g, '<li class="ml-4 text-gray-300">$1</li>');
+            
+            // Format newlines
+            content = content.replace(/\n/g, '<br>');
+            
+            return content;
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chatContainer');
+            const div = document.createElement('div');
+            div.id = 'typingIndicator';
+            div.className = 'flex gap-4 items-start';
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0 ai-thinking">
+                    ${config.name.substring(0, 2).toUpperCase()}
+                </div>
+                <div class="glass-panel rounded-2xl rounded-tl-sm px-5 py-4 flex items-center gap-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div>
+                </div>
+            `;
+            container.appendChild(div);
+            scrollToBottom();
+        }
+
+        function removeTyping() {
+            const indicator = document.getElementById('typingIndicator');
+            if(indicator) indicator.remove();
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function clearChat() {
+            if(confirm('Clear all conversation history?')) {
+                document.getElementById('chatContainer').innerHTML = `
+                    <div class="flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                            ${config.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div class="message-bubble glass-panel rounded-2xl rounded-tl-sm px-5 py-3 text-gray-200 leading-relaxed">
+                            <p class="mb-2">Namaste! 🙏 I'm ${config.name}, ready to help you with anything you need.</p>
+                            <p class="text-sm text-gray-400">I can help you with coding, writing, analysis, learning, and much more. What would you like to explore today?</p>
+                        </div>
+                    </div>
+                `;
+                chatHistory = [];
+            }
+        }
+
+        function attachFile() {
+            showNotification('📎 File upload feature coming soon!');
+        }
+
+        function showNotification(message) {
+            const existing = document.querySelector('.notification');
+            if(existing) existing.remove();
+            
+            const notif = document.createElement('div');
+            notif.className = 'notification fixed top-20 right-6 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-xl border border-white/10 z-50 text-sm';
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                notif.style.transform = 'translateY(-10px)';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+
+        // Close settings when clicking outside
+        document.addEventListener('click', (e) => {
+            const settings = document.getElementById('settingsPanel');
+            const settingsBtn = e.target.closest('button[onclick="toggleSettings()"]');
+            if(!settings.contains(e.target) && !settingsBtn && !settings.classList.contains('hidden')) {
+                settings.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -14,28 +14,22 @@
         }
         .mono { font-family: 'JetBrains Mono', monospace; }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
         
-        /* Animations */
         @keyframes pulse-glow {
             0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
             50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
         }
-        .ai-thinking {
-            animation: pulse-glow 2s infinite;
-        }
+        .ai-thinking { animation: pulse-glow 2s infinite; }
         
         @keyframes typing {
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
         }
-        .typing-dot {
-            animation: typing 1.4s infinite;
-        }
+        .typing-dot { animation: typing 1.4s infinite; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         
@@ -45,22 +39,13 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .message-bubble {
-            position: relative;
-            max-width: 80%;
-            word-wrap: break-word;
-        }
+        .message-bubble { position: relative; max-width: 80%; word-wrap: break-word; }
         
         .code-block {
             background: #1e1e1e;
             border-radius: 8px;
             border: 1px solid #333;
         }
-        
-        /* Indian Theme Accents */
-        .saffron { color: #ff9933; }
-        .green { color: #138808; }
-        .chakra { color: #000080; }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
@@ -90,7 +75,7 @@
         </div>
     </header>
 
-    <!-- Settings Panel (Hidden by default) -->
+    <!-- Settings Panel -->
     <div id="settingsPanel" class="hidden absolute top-16 right-6 w-80 glass-panel rounded-xl border border-white/10 shadow-2xl z-50 p-4">
         <h3 class="font-bold text-white mb-4 flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
@@ -104,26 +89,35 @@
             </div>
             
             <div>
-                <label class="block text-xs text-gray-400 mb-1">Bot Role/Persona</label>
-                <textarea id="configRole" rows="3" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 mono text-xs">You are a helpful AI assistant. You provide detailed, accurate information and help users with their questions.</textarea>
+                <label class="block text-xs text-gray-400 mb-1">System Prompt (Personality)</label>
+                <textarea id="configRole" rows="3" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 mono text-xs">You are a helpful AI assistant. You provide detailed, accurate information and help users with their questions. You are knowledgeable about technology, coding, and general topics. Always be helpful and thorough in your responses.</textarea>
             </div>
             
             <div>
-                <label class="block text-xs text-gray-400 mb-1">API Provider</label>
-                <select id="configAPI" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                    <option value="openai">OpenAI (GPT-4)</option>
-                    <option value="anthropic">Anthropic (Claude)</option>
-                    <option value="local">Local Storage (Simulated)</option>
+                <label class="block text-xs text-gray-400 mb-1">AI Model</label>
+                <select id="configModel" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast & Cheap)</option>
+                    <option value="gpt-4">GPT-4 (Smart & Slow)</option>
+                    <option value="gpt-4o-mini">GPT-4o Mini (Balanced)</option>
                 </select>
             </div>
             
             <div>
-                <label class="block text-xs text-gray-400 mb-1">API Key</label>
+                <label class="block text-xs text-gray-400 mb-1">OpenAI API Key</label>
                 <input type="password" id="configKey" placeholder="sk-..." class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 mono">
+                <p class="text-xs text-gray-500 mt-1">Get from: platform.openai.com/api-keys</p>
+            </div>
+            
+            <div class="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <p class="text-xs text-yellow-400">⚠️ Your API key is stored only in your browser (localStorage). Never share it!</p>
             </div>
             
             <button onclick="saveConfig()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-medium transition-colors">
-                Save Configuration
+                Save & Connect
+            </button>
+            
+            <button onclick="testConnection()" class="w-full bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/30 py-2 rounded-lg text-sm font-medium transition-colors">
+                Test Connection
             </button>
         </div>
     </div>
@@ -136,8 +130,8 @@
                 AI
             </div>
             <div class="message-bubble glass-panel rounded-2xl rounded-tl-sm px-5 py-3 text-gray-200 leading-relaxed">
-                <p class="mb-2">Namaste! 🙏 I'm your AI assistant, ready to help you with anything you need.</p>
-                <p class="text-sm text-gray-400">I can help you with coding, writing, analysis, learning, and much more. What would you like to explore today?</p>
+                <p class="mb-2">Namaste! 🙏 I'm your AI assistant.</p>
+                <p class="text-sm text-gray-400">To get started, please add your OpenAI API key in Settings (⚙️ icon above). Your key is stored securely in your browser only.</p>
             </div>
         </div>
     </div>
@@ -145,19 +139,15 @@
     <!-- Input Area -->
     <div class="glass-panel border-t border-white/10 p-4 shrink-0">
         <div class="max-w-4xl mx-auto relative">
-            <!-- Suggestion Chips -->
-            <div class="flex gap-2 mb-3 overflow-x-auto pb-2 scrollbar-hide" id="suggestionChips">
-                <button onclick="quickAsk('Explain quantum computing simply')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
-                    Explain quantum computing
+            <div class="flex gap-2 mb-3 overflow-x-auto pb-2" id="suggestionChips">
+                <button onclick="quickAsk('Explain quantum computing in simple terms')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
+                    Quantum computing
                 </button>
-                <button onclick="quickAsk('Write a Python script for web scraping')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
-                    Python web scraper
+                <button onclick="quickAsk('Write a Python function to calculate factorial')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
+                    Python factorial
                 </button>
-                <button onclick="quickAsk('Help me write a professional email')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
-                    Professional email
-                </button>
-                <button onclick="quickAsk('What are the best practices for React?')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
-                    React best practices
+                <button onclick="quickAsk('Who is Rahul Gandhi?')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">
+                    About Rahul Gandhi
                 </button>
             </div>
             
@@ -165,22 +155,20 @@
                 <textarea 
                     id="userInput" 
                     rows="1" 
-                    placeholder="Message your assistant..." 
+                    placeholder="Enter OpenAI API key in Settings first..." 
                     class="flex-1 bg-transparent border-none resize-none max-h-32 px-3 py-2 text-white placeholder-gray-500 focus:outline-none text-sm"
                     onkeydown="handleKeyDown(event)"
                     oninput="autoResize(this)"
+                    disabled
                 ></textarea>
                 
                 <div class="flex items-center gap-1 pb-1">
-                    <button onclick="attachFile()" class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors" title="Attach file">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                    </button>
-                    <button onclick="sendMessage()" id="sendBtn" class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button onclick="sendMessage()" id="sendBtn" class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
                     </button>
                 </div>
             </div>
-            <p class="text-xs text-gray-500 mt-2 text-center">AI can make mistakes. Please verify important information.</p>
+            <p class="text-xs text-gray-500 mt-2 text-center">Powered by OpenAI GPT • Your API key never leaves your browser</p>
         </div>
     </div>
 
@@ -189,18 +177,16 @@
         let config = {
             name: 'Your Assistant',
             role: 'You are a helpful AI assistant. You provide detailed, accurate information and help users with their questions.',
-            apiProvider: 'local',
+            model: 'gpt-3.5-turbo',
             apiKey: ''
         };
 
-        // Chat History
         let chatHistory = [];
         let isProcessing = false;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadConfig();
-            document.getElementById('userInput').focus();
         });
 
         function toggleSettings() {
@@ -211,16 +197,32 @@
         function saveConfig() {
             config.name = document.getElementById('configName').value || 'Your Assistant';
             config.role = document.getElementById('configRole').value;
-            config.apiProvider = document.getElementById('configAPI').value;
-            config.apiKey = document.getElementById('configKey').value;
+            config.model = document.getElementById('configModel').value;
+            config.apiKey = document.getElementById('configKey').value.trim();
+            
+            if(!config.apiKey) {
+                showNotification('❌ Please enter an API key!');
+                return;
+            }
+            
+            if(!config.apiKey.startsWith('sk-')) {
+                showNotification('⚠️ Invalid API key format. Should start with "sk-"');
+                return;
+            }
             
             localStorage.setItem('aiBotConfig', JSON.stringify(config));
             
             document.getElementById('botName').textContent = config.name;
             document.getElementById('botAvatar').textContent = config.name.substring(0, 2).toUpperCase();
             
+            // Enable input
+            const input = document.getElementById('userInput');
+            input.disabled = false;
+            input.placeholder = `Message ${config.name}...`;
+            document.getElementById('sendBtn').disabled = false;
+            
             toggleSettings();
-            showNotification('Configuration saved!');
+            showNotification('✅ API Key saved! Ready to chat.');
         }
 
         function loadConfig() {
@@ -229,10 +231,46 @@
                 config = JSON.parse(saved);
                 document.getElementById('configName').value = config.name;
                 document.getElementById('configRole').value = config.role;
-                document.getElementById('configAPI').value = config.apiProvider;
+                document.getElementById('configModel').value = config.model || 'gpt-3.5-turbo';
                 document.getElementById('configKey').value = config.apiKey;
                 document.getElementById('botName').textContent = config.name;
                 document.getElementById('botAvatar').textContent = config.name.substring(0, 2).toUpperCase();
+                
+                if(config.apiKey) {
+                    const input = document.getElementById('userInput');
+                    input.disabled = false;
+                    input.placeholder = `Message ${config.name}...`;
+                    document.getElementById('sendBtn').disabled = false;
+                }
+            }
+        }
+
+        async function testConnection() {
+            const key = document.getElementById('configKey').value.trim();
+            if(!key) {
+                showNotification('❌ Enter API key first!');
+                return;
+            }
+            
+            showNotification('🔄 Testing connection...');
+            
+            try {
+                const response = await fetch('https://api.openai.com/v1/models', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${key}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if(response.ok) {
+                    showNotification('✅ API Key is valid!');
+                } else {
+                    const error = await response.json();
+                    showNotification(`❌ Error: ${error.error?.message || 'Invalid key'}`);
+                }
+            } catch(e) {
+                showNotification('❌ Network error. Check your connection.');
             }
         }
 
@@ -249,6 +287,11 @@
         }
 
         function quickAsk(text) {
+            if(!config.apiKey) {
+                showNotification('⚠️ Please add API key in Settings first!');
+                toggleSettings();
+                return;
+            }
             document.getElementById('userInput').value = text;
             sendMessage();
         }
@@ -259,205 +302,67 @@
             
             if(!message || isProcessing) return;
             
+            if(!config.apiKey) {
+                showNotification('⚠️ Please configure API key in Settings!');
+                return;
+            }
+            
             // Add user message
             addMessage(message, 'user');
             input.value = '';
             input.style.height = 'auto';
             
-            // Show typing indicator
+            // Show typing
             isProcessing = true;
             showTyping();
             
-            // Process message
             try {
-                const response = await processWithAI(message);
+                const response = await callOpenAI(message);
                 removeTyping();
                 addMessage(response, 'assistant');
             } catch(error) {
                 removeTyping();
-                addMessage('I apologize, but I encountered an error processing your request. Please try again.', 'assistant');
+                addMessage(`❌ Error: ${error.message}\n\nPlease check your API key and try again.`, 'assistant');
             }
             
             isProcessing = false;
         }
 
-        async function processWithAI(message) {
-            // Check for specific patterns first (local intelligence)
-            const lowerMsg = message.toLowerCase();
+        async function callOpenAI(message) {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${config.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: config.model || 'gpt-3.5-turbo',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: config.role
+                        },
+                        ...chatHistory.slice(-6).map(h => ({
+                            role: h.role,
+                            content: h.content
+                        })),
+                        {
+                            role: 'user',
+                            content: message
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1000
+                })
+            });
             
-            // Code detection
-            if(lowerMsg.includes('code') || lowerMsg.includes('script') || lowerMsg.includes('program') || lowerMsg.includes('function')) {
-                return generateCodeResponse(message);
+            if(!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || 'API request failed');
             }
             
-            // Explanation request
-            if(lowerMsg.includes('explain') || lowerMsg.includes('what is') || lowerMsg.includes('how does')) {
-                return generateExplanation(message);
-            }
-            
-            // Writing help
-            if(lowerMsg.includes('write') || lowerMsg.includes('draft') || lowerMsg.includes('email') || lowerMsg.includes('letter')) {
-                return generateWriting(message);
-            }
-            
-            // Indian context awareness
-            if(lowerMsg.includes('india') || lowerMsg.includes('indian') || lowerMsg.includes('hindi') || lowerMsg.includes('rupee')) {
-                return generateIndianContextResponse(message);
-            }
-            
-            // General conversational response
-            return generateGeneralResponse(message);
-        }
-
-        function generateCodeResponse(message) {
-            const responses = [
-                `I'd be happy to help you with that code! Here's a solution:\n\n\`\`\`python\n# Example implementation\ndef solution():\n    print("Processing your request...")\n    # Add your logic here\n    return "Success"\n\nresult = solution()\n\`\`\`\n\nWould you like me to explain how this works or modify it for your specific use case?`,
-                
-                `Here's a code snippet that should help:\n\n\`\`\`javascript\n// Modern approach\nasync function handleRequest() {\n  try {\n    const data = await fetchData();\n    return processData(data);\n  } catch (error) {\n    console.error('Error:', error);\n  }\n}\n\`\`\`\n\nLet me know if you need this in a different programming language!`,
-                
-                `I can help with that! Here's a clean implementation:\n\n\`\`\`python\nclass Solution:\n    def __init__(self):\n        self.data = []\n    \n    def process(self, input_data):\n        # Your processing logic\n        return transformed_data\n\`\`\`\n\nWould you like me to add error handling or optimize this further?`
-            ];
-            return responses[Math.floor(Math.random() * responses.length)];
-        }
-
-        function generateExplanation(message) {
-            return `Great question! Let me break this down for you:
-
-**Key Concepts:**
-1. **Fundamental Principle**: At its core, this works by...
-2. **Main Components**: There are three essential parts...
-3. **How They Interact**: These components communicate through...
-
-**Real-world Analogy:**
-Think of it like a ${getRandomAnalogy()}...
-
-**Practical Example:**
-${getRandomExample()}
-
-Would you like me to dive deeper into any specific aspect, or shall I provide a practical implementation?`;
-        }
-
-        function generateWriting(message) {
-            return `Here's a draft for you:
-
----
-
-**Subject:** ${extractSubject(message)}
-
-Dear [Name],
-
-I hope this message finds you well. I'm writing regarding ${extractTopic(message)}.
-
-[Main content based on your specific requirements would go here, tailored to tone and context]
-
-Please let me know if you need any adjustments to the tone or content.
-
-Best regards,
-[Your Name]
-
----
-
-Would you like me to make this more formal, casual, or adjust anything specific?`;
-        }
-
-        function generateIndianContextResponse(message) {
-            return `Absolutely! As someone familiar with the Indian context, I can help with that.
-
-**Relevant Information:**
-• **Local Context**: In India, this is particularly relevant because...
-• **Practical Considerations**: You'll want to keep in mind factors like...
-• **Resources**: Some useful India-specific resources include...
-
-**Cultural Nuance:**
-Given India's diverse landscape, it's important to consider regional variations...
-
-**Next Steps:**
-1. Research local regulations/guidelines
-2. Connect with relevant communities
-3. Adapt strategy for Indian market
-
-Would you like specific information about any particular state or aspect?`;
-        }
-
-        function generateGeneralResponse(message) {
-            const responses = [
-                `That's an interesting topic! Here's what I know:
-
-**Overview:**
-This is a fascinating area with several key aspects worth considering.
-
-**Key Points:**
-• First, it's important to understand the fundamentals
-• Second, practical application matters significantly  
-• Third, staying updated with recent developments is crucial
-
-**My Recommendation:**
-Start with the basics, then gradually move to advanced concepts. Practice consistently, and don't hesitate to ask specific questions as you progress.
-
-What specific aspect would you like to explore further?`,
-                
-                `I'd love to help you with that! Based on your question, here are my thoughts:
-
-**Understanding Your Need:**
-It seems like you're looking for practical, actionable advice.
-
-**Here's My Suggestion:**
-1. Break down the problem into smaller parts
-2. Tackle each component systematically
-3. Review and iterate based on feedback
-
-**Additional Resources:**
-I can provide specific examples, code snippets, or detailed explanations depending on what would be most helpful.
-
-What would be most useful for you right now?`,
-                
-                `Great question! Let me provide a comprehensive answer:
-
-**The Short Answer:**
-Yes, this is definitely possible and here's how you can approach it.
-
-**Detailed Breakdown:**
-The process involves several steps, each building upon the previous one. The key is to start with a solid foundation.
-
-**Common Pitfalls to Avoid:**
-• Rushing through the basics
-• Ignoring edge cases
-• Not testing thoroughly
-
-**Pro Tip:**
-Document your process as you go - it will save you time later!
-
-Does this help? Feel free to ask follow-up questions!`
-            ];
-            return responses[Math.floor(Math.random() * responses.length)];
-        }
-
-        function getRandomAnalogy() {
-            const analogies = ['postal delivery system', 'restaurant kitchen', 'library organization', 'traffic management', 'cellular network'];
-            return analogies[Math.floor(Math.random() * analogies.length)];
-        }
-
-        function getRandomExample() {
-            const examples = [
-                'Consider a scenario where you need to process 1000 records...',
-                'Imagine you\'re building a feature for a mobile app...',
-                'Think about automating a repetitive task at work...',
-                'Picture a system that needs to handle real-time data...'
-            ];
-            return examples[Math.floor(Math.random() * examples.length)];
-        }
-
-        function extractSubject(message) {
-            // Simple extraction logic
-            if(message.toLowerCase().includes('job')) return 'Application for Position';
-            if(message.toLowerCase().includes('meeting')) return 'Meeting Request';
-            if(message.toLowerCase().includes('proposal')) return 'Project Proposal';
-            return 'Regarding Your Request';
-        }
-
-        function extractTopic(message) {
-            const words = message.split(' ');
-            return words.slice(0, 5).join(' ') + '...';
+            const data = await response.json();
+            return data.choices[0].message.content;
         }
 
         function addMessage(content, role) {
@@ -489,8 +394,6 @@ Does this help? Feel free to ask follow-up questions!`
             
             container.appendChild(div);
             scrollToBottom();
-            
-            // Save to history
             chatHistory.push({role, content, timestamp: new Date()});
         }
 
@@ -556,8 +459,8 @@ Does this help? Feel free to ask follow-up questions!`
                             ${config.name.substring(0, 2).toUpperCase()}
                         </div>
                         <div class="message-bubble glass-panel rounded-2xl rounded-tl-sm px-5 py-3 text-gray-200 leading-relaxed">
-                            <p class="mb-2">Namaste! 🙏 I'm ${config.name}, ready to help you with anything you need.</p>
-                            <p class="text-sm text-gray-400">I can help you with coding, writing, analysis, learning, and much more. What would you like to explore today?</p>
+                            <p class="mb-2">Namaste! 🙏 I'm ${config.name}.</p>
+                            <p class="text-sm text-gray-400">Ready to help you with anything you need!</p>
                         </div>
                     </div>
                 `;
@@ -565,16 +468,12 @@ Does this help? Feel free to ask follow-up questions!`
             }
         }
 
-        function attachFile() {
-            showNotification('📎 File upload feature coming soon!');
-        }
-
         function showNotification(message) {
             const existing = document.querySelector('.notification');
             if(existing) existing.remove();
             
             const notif = document.createElement('div');
-            notif.className = 'notification fixed top-20 right-6 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-xl border border-white/10 z-50 text-sm';
+            notif.className = 'notification fixed top-20 right-6 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-xl border border-white/10 z-50 text-sm transform transition-all';
             notif.textContent = message;
             document.body.appendChild(notif);
             

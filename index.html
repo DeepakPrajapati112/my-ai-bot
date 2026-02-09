@@ -3,497 +3,830 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant - Working Version</title>
+    <title>ViralX Bot - Social Media Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0f0f0f; color: #e5e5e5; }
-        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .code-block { background: #1e1e1e; border-radius: 8px; border: 1px solid #333; }
-        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); } 50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); } }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; }
+        .brand-font { font-family: 'Space Grotesk', sans-serif; }
+        .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass-panel { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .neon-glow { box-shadow: 0 0 20px rgba(102,126,234,0.5), 0 0 40px rgba(118,75,162,0.3); }
+        .platform-btn { transition: all 0.3s; }
+        .platform-btn:hover { transform: translateY(-2px); }
+        .twitter-hover:hover { background: #1da1f2; border-color: #1da1f2; }
+        .instagram-hover:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-color: transparent; }
+        .facebook-hover:hover { background: #1877f2; border-color: #1877f2; }
+        .linkedin-hover:hover { background: #0a66c2; border-color: #0a66c2; }
+        .schedule-item { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 20px rgba(102,126,234,0.3); } 50% { box-shadow: 0 0 40px rgba(102,126,234,0.6); } }
         .ai-thinking { animation: pulse-glow 2s infinite; }
-        @keyframes typing { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         .typing-dot { animation: typing 1.4s infinite; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .toast { animation: toastSlide 0.3s ease-out; }
+        @keyframes toastSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
+<body class="min-h-screen">
 
-    <!-- Header -->
-    <header class="glass-panel border-b border-white/10 px-6 py-4 flex items-center justify-between shrink-0 z-50">
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-purple-500/30" id="botAvatar">AI</div>
-            <div>
-                <h1 class="font-bold text-lg text-white" id="botName">Your Assistant</h1>
-                <div class="flex items-center gap-2 text-xs text-gray-400">
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span id="botStatus">Ready</span>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold">V</div>
+                    <span class="brand-font text-xl font-bold gradient-text">ViralX Bot</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="switchTab('generator')" class="nav-tab tab-active px-4 py-2 rounded-full text-sm font-medium transition-all bg-gradient-to-r from-purple-600 to-blue-600 text-white">Generator</button>
+                    <button onclick="switchTab('drafts')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Drafts <span id="draftCount" class="ml-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span></button>
+                    <button onclick="switchTab('schedule')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Schedule</button>
+                    <button onclick="switchTab('settings')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Settings</button>
                 </div>
             </div>
         </div>
-        <button onclick="toggleSettings()" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-xl">⚙️</button>
-    </header>
+    </nav>
 
-    <!-- Settings Panel -->
-    <div id="settingsPanel" class="hidden absolute top-16 right-6 w-96 glass-panel rounded-xl border border-white/10 shadow-2xl z-50 p-4 max-h-[80vh] overflow-y-auto">
-        <h3 class="font-bold text-white mb-4 text-lg">Configuration</h3>
-        
-        <div class="space-y-4">
-            <!-- Provider Selection -->
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">Select AI Provider</label>
-                <select id="configProvider" onchange="switchProvider()" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                    <option value="groq">Groq (Free - Fast) ⭐ RECOMMENDED</option>
-                    <option value="openrouter">OpenRouter (Free Tier)</option>
-                    <option value="simulated">Simulated AI (No API Key)</option>
-                </select>
-            </div>
+    <!-- Main Content -->
+    <main class="pt-20 pb-12 px-4 max-w-7xl mx-auto">
 
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">Bot Name</label>
-                <input type="text" id="configName" value="Your Assistant" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-            </div>
+        <!-- GENERATOR TAB -->
+        <div id="generator-tab" class="space-y-6">
             
-            <!-- Groq Settings -->
-            <div id="groqSettings">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Groq API Key</label>
-                    <input type="password" id="groqKey" placeholder="gsk_..." class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-mono text-xs">
-                    <p class="text-xs text-gray-500 mt-1">Get from: console.groq.com/keys</p>
+            <!-- Hero -->
+            <div class="text-center space-y-2 mb-8">
+                <h1 class="text-4xl md:text-5xl font-bold brand-font">Create <span class="gradient-text">Viral</span> Content</h1>
+                <p class="text-gray-400">Generate once, post everywhere with one click</p>
+            </div>
+
+            <!-- AI Provider Selection -->
+            <div class="glass-panel rounded-2xl p-6 max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">AI Provider</label>
+                        <select id="aiProvider" onchange="switchAIProvider()" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                            <option value="groq">Groq (Free - Fast)</option>
+                            <option value="openrouter">OpenRouter (Free)</option>
+                            <option value="simulated">Simulated (No API)</option>
+                        </select>
+                    </div>
+                    <div id="aiKeyContainer">
+                        <label class="block text-sm text-gray-400 mb-2">API Key</label>
+                        <input type="password" id="aiApiKey" placeholder="Enter API key..." class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm font-mono">
+                    </div>
                 </div>
-                <div class="mt-2">
-                    <label class="block text-xs text-gray-400 mb-1">Model (Updated 2024)</label>
-                    <select id="groqModel" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant ⭐ FASTEST</option>
-                        <option value="llama-3.2-1b-preview">Llama 3.2 1B Preview (Ultra Fast)</option>
-                        <option value="llama-3.2-3b-preview">Llama 3.2 3B Preview (Balanced)</option>
-                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile (Smartest)</option>
-                        <option value="mixtral-8x7b-32768">Mixtral 8x7B (Good for coding)</option>
-                        <option value="gemma2-9b-it">Gemma 2 9B IT (Google)</option>
-                    </select>
-                    <p class="text-xs text-green-400 mt-1">✅ All models updated and working!</p>
+                <div class="flex gap-2">
+                    <button onclick="saveAISettings()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">💾 Save Settings</button>
+                    <button onclick="testAIConnection()" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">🧪 Test</button>
                 </div>
             </div>
 
-            <!-- OpenRouter Settings -->
-            <div id="openrouterSettings" class="hidden">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">OpenRouter API Key</label>
-                    <input type="password" id="openrouterKey" placeholder="sk-or-v1-..." class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-mono text-xs">
-                    <p class="text-xs text-gray-500 mt-1">Get from: openrouter.ai/keys</p>
-                </div>
-                <div class="mt-2">
-                    <label class="block text-xs text-gray-400 mb-1">Model</label>
-                    <select id="openrouterModel" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                        <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
-                        <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B (Free)</option>
-                    </select>
+            <!-- Content Generator -->
+            <div class="glass-panel rounded-2xl p-6 max-w-4xl mx-auto neon-glow">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">What's your topic?</label>
+                        <input type="text" id="topicInput" placeholder="e.g., AI productivity, morning routines, crypto trends..." class="w-full bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Platform</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button onclick="selectPlatform('twitter')" class="platform-btn twitter-hover p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium flex items-center justify-center gap-2" data-platform="twitter">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                X/Twitter
+                            </button>
+                            <button onclick="selectPlatform('instagram')" class="platform-btn instagram-hover p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium flex items-center justify-center gap-2" data-platform="instagram">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                Instagram
+                            </button>
+                            <button onclick="selectPlatform('facebook')" class="platform-btn facebook-hover p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium flex items-center justify-center gap-2" data-platform="facebook">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                Facebook
+                            </button>
+                            <button onclick="selectPlatform('linkedin')" class="platform-btn linkedin-hover p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium flex items-center justify-center gap-2" data-platform="linkedin">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                                LinkedIn
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Tone</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button onclick="selectTone('viral')" class="tone-btn p-3 rounded-xl border border-purple-500 bg-purple-500/20 text-sm font-medium" data-tone="viral">🔥 Viral</button>
+                            <button onclick="selectTone('professional')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-tone="professional">💼 Professional</button>
+                            <button onclick="selectTone('casual')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-tone="casual">😊 Casual</button>
+                            <button onclick="selectTone('story')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-tone="story">📖 Story</button>
+                        </div>
+                    </div>
+
+                    <button onclick="generateContent()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-4 rounded-xl text-lg transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/30">
+                        ✨ Generate Viral Content
+                    </button>
                 </div>
             </div>
 
-            <!-- Simulated AI Info -->
-            <div id="simulatedSettings" class="hidden p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <p class="text-xs text-yellow-400">⚠️ Simulated Mode</p>
-                <p class="text-xs text-gray-400 mt-1">No API key needed. Uses pre-written responses.</p>
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+                <p class="mt-4 text-gray-400">Crafting viral content...</p>
             </div>
+
+            <!-- Generated Content -->
+            <div id="generatedContent" class="hidden space-y-4 max-w-4xl mx-auto">
+                <!-- Content will appear here -->
+            </div>
+        </div>
+
+        <!-- DRAFTS TAB -->
+        <div id="drafts-tab" class="hidden space-y-6">
+            <h2 class="text-3xl font-bold brand-font gradient-text">Your Drafts</h2>
+            <div id="draftsList" class="grid gap-4">
+                <p class="text-gray-500 text-center py-12">No drafts saved yet. Generate content to save drafts!</p>
+            </div>
+        </div>
+
+        <!-- SCHEDULE TAB -->
+        <div id="schedule-tab" class="hidden space-y-6">
+            <h2 class="text-3xl font-bold brand-font gradient-text">Best Times to Post</h2>
             
-            <button onclick="saveConfig()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium transition-colors">💾 Save & Connect</button>
-            <button onclick="testConnection()" class="w-full bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/30 py-2 rounded-lg text-sm font-medium transition-colors">🧪 Test Connection</button>
-        </div>
-    </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">⏰ Optimal Posting Times (IST)</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                            <span class="text-green-400 font-medium">🌅 Morning</span>
+                            <span class="text-white">8:00 - 10:00 AM</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                            <span class="text-blue-400 font-medium">🌞 Lunch</span>
+                            <span class="text-white">12:00 - 2:00 PM</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                            <span class="text-purple-400 font-medium">🌆 Evening</span>
+                            <span class="text-white">6:00 - 9:00 PM</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-pink-500/10 border border-pink-500/30 rounded-lg">
+                            <span class="text-pink-400 font-medium">🌙 Night</span>
+                            <span class="text-white">9:00 - 11:00 PM</span>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Chat Area -->
-    <div id="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth">
-        <div class="flex gap-4 items-start">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">AI</div>
-            <div class="glass-panel rounded-2xl rounded-tl-sm px-5 py-3 text-gray-200 leading-relaxed max-w-[80%]">
-                <p class="mb-2">Namaste! 🙏 I'm your AI assistant.</p>
-                <p class="text-sm text-gray-400">I support multiple AI providers. Groq is recommended for speed!</p>
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">📅 Platform-Specific</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <span class="text-blue-400 font-bold">X/Twitter:</span>
+                            <span class="text-gray-300"> Best Tue-Thu, 9AM & 7-9PM</span>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <span class="text-pink-400 font-bold">Instagram:</span>
+                            <span class="text-gray-300"> Best Wed-Fri, 11AM & 2PM</span>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <span class="text-blue-600 font-bold">Facebook:</span>
+                            <span class="text-gray-300"> Best Wed, 11AM & 1PM</span>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <span class="text-blue-700 font-bold">LinkedIn:</span>
+                            <span class="text-gray-300"> Best Tue-Thu, 8-10AM & 5-6PM</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Input Area -->
-    <div class="glass-panel border-t border-white/10 p-4 shrink-0">
-        <div class="max-w-4xl mx-auto">
-            <div class="flex gap-2 mb-3 overflow-x-auto pb-2">
-                <button onclick="quickAsk('Who is Rahul Gandhi?')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">Who is Rahul Gandhi?</button>
-                <button onclick="quickAsk('Explain quantum computing simply')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">Quantum computing</button>
-                <button onclick="quickAsk('Write a Python hello world program')" class="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-colors">Python code</button>
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-xl font-semibold mb-4">🎯 Your Scheduled Reminders</h3>
+                <div id="remindersList" class="space-y-3">
+                    <p class="text-gray-500 text-center py-8">No reminders set. Create posts and schedule them!</p>
+                </div>
             </div>
-            <div class="relative flex items-end gap-2 bg-black/50 border border-white/20 rounded-2xl p-2 focus-within:border-blue-500 transition-colors">
-                <textarea id="userInput" rows="1" placeholder="Select a provider in Settings first..." class="flex-1 bg-transparent border-none resize-none max-h-32 px-3 py-2 text-white placeholder-gray-500 focus:outline-none text-sm" onkeydown="handleKeyDown(event)" oninput="autoResize(this)" disabled></textarea>
-                <button onclick="sendMessage()" id="sendBtn" class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>➤</button>
-            </div>
-            <p class="text-xs text-gray-500 mt-2 text-center" id="providerStatus">Please configure an AI provider in Settings</p>
         </div>
-    </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settings-tab" class="hidden space-y-6 max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold brand-font gradient-text">Settings</h2>
+            
+            <div class="glass-panel rounded-2xl p-6 space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Default Settings</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Default Platform</label>
+                            <select id="defaultPlatform" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                                <option value="twitter">X/Twitter</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Default Tone</label>
+                            <select id="defaultTone" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                                <option value="viral">Viral</option>
+                                <option value="professional">Professional</option>
+                                <option value="casual">Casual</option>
+                                <option value="story">Story</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/10 pt-6">
+                    <h3 class="text-lg font-semibold mb-3 text-red-400">Danger Zone</h3>
+                    <button onclick="clearAllData()" class="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 py-3 rounded-lg text-sm font-medium transition-colors">
+                        🗑️ Clear All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
     <script>
-        // Configuration
+        // State
         let config = {
-            name: 'Your Assistant',
-            provider: 'groq',
-            groqKey: '',
-            groqModel: 'llama-3.1-8b-instant',
-            openrouterKey: '',
-            openrouterModel: 'google/gemini-2.0-flash-exp:free'
+            aiProvider: 'groq',
+            aiKey: '',
+            platform: 'twitter',
+            tone: 'viral',
+            defaultPlatform: 'twitter',
+            defaultTone: 'viral'
+        };
+        
+        let drafts = [];
+        let reminders = [];
+        let generatedPosts = [];
+
+        // Platform configs
+        const platformConfig = {
+            twitter: { name: 'X/Twitter', maxLength: 280, hashtagCount: 2 },
+            instagram: { name: 'Instagram', maxLength: 2200, hashtagCount: 10 },
+            facebook: { name: 'Facebook', maxLength: 63206, hashtagCount: 5 },
+            linkedin: { name: 'LinkedIn', maxLength: 3000, hashtagCount: 3 }
         };
 
-        let chatHistory = [];
-        let isProcessing = false;
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            loadDrafts();
+            loadReminders();
+            selectPlatform(config.platform || 'twitter');
+            selectTone(config.tone || 'viral');
+            updateDraftCount();
+        });
 
-        // Simulated AI responses
-        const simulatedResponses = {
-            'who is rahul gandhi': `Rahul Gandhi is an Indian politician and a member of the Indian National Congress party.
-
-**Background:**
-• Born on June 19, 1970, in New Delhi, India
-• Son of former Prime Minister Rajiv Gandhi and Sonia Gandhi
-• Member of the Nehru-Gandhi political family
-• Currently serving as Leader of the Opposition in Lok Sabha (as of 2024)
-
-**Political Career:**
-• Member of Parliament from Wayanad, Kerala
-• President of Indian National Congress (2017-2019)
-• Vice President of INC (2013-2017)
-
-**Current Role:**
-Leading the opposition against the BJP-led government. In 2024, he became the Leader of Opposition in the Lok Sabha after Congress performed well in general elections.`,
-
-            'explain quantum computing': `Quantum computing uses quantum mechanics principles to process information.
-
-**Key Concepts:**
-• **Superposition**: Qubits can be 0, 1, or both simultaneously
-• **Entanglement**: Qubits can be linked across distances
-• **Interference**: Quantum states amplify or cancel each other
-
-**Applications:**
-• Drug discovery and molecular simulation
-• Cryptography and security
-• Financial modeling
-• AI optimization
-
-**Current State**: Still experimental, requires extreme cooling.`,
-
-            'write a python hello world': `\`\`\`python
-# Hello World in Python
-print("Hello, World!")
-
-# With variable
-message = "Hello from Python!"
-print(message)
-
-# With user input
-name = input("What's your name? ")
-print(f"Hello, {name}!")
-\`\`\`
-
-**To run**: Save as \`hello.py\`, then run \`python hello.py\``,
-
-            'default': `I understand your question. Let me provide a helpful response:
-
-**Key Points:**
-• This is an important topic with multiple aspects
-• I recommend researching from reliable sources
-• Practice and consistency are key
-
-**Note**: I'm currently in simulated mode. For real-time AI responses, please configure an API key in Settings using Groq or OpenRouter.
-
-How else can I help you?`
-        };
-
-        document.addEventListener('DOMContentLoaded', () => { loadConfig(); });
-
-        function switchProvider() {
-            const provider = document.getElementById('configProvider').value;
-            document.getElementById('groqSettings').classList.toggle('hidden', provider !== 'groq');
-            document.getElementById('openrouterSettings').classList.toggle('hidden', provider !== 'openrouter');
-            document.getElementById('simulatedSettings').classList.toggle('hidden', provider !== 'simulated');
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('[id$="-tab"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tab + '-tab').classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('tab-active', 'bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'text-white');
+                btn.classList.add('text-gray-400');
+            });
+            
+            const activeBtn = document.querySelector(`button[onclick="switchTab('${tab}')"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('tab-active', 'bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'text-white');
+                activeBtn.classList.remove('text-gray-400');
+            }
+            
+            if (tab === 'drafts') {
+                renderDrafts();
+            } else if (tab === 'schedule') {
+                renderReminders();
+            }
         }
 
-        function toggleSettings() { 
-            document.getElementById('settingsPanel').classList.toggle('hidden'); 
+        // AI Provider switching
+        function switchAIProvider() {
+            const provider = document.getElementById('aiProvider').value;
+            document.getElementById('aiKeyContainer').style.display = provider === 'simulated' ? 'none' : 'block';
         }
 
-        function saveConfig() {
-            config.name = document.getElementById('configName').value || 'Your Assistant';
-            config.provider = document.getElementById('configProvider').value;
-            config.groqKey = document.getElementById('groqKey').value.trim();
-            config.groqModel = document.getElementById('groqModel').value;
-            config.openrouterKey = document.getElementById('openrouterKey').value.trim();
-            config.openrouterModel = document.getElementById('openrouterModel').value;
-
-            const key = config.provider === 'groq' ? config.groqKey : 
-                       config.provider === 'openrouter' ? config.openrouterKey : 'simulated';
-
-            if (config.provider !== 'simulated' && !key) {
-                showNotification('❌ Please enter an API key!');
+        function saveAISettings() {
+            config.aiProvider = document.getElementById('aiProvider').value;
+            config.aiKey = document.getElementById('aiApiKey').value.trim();
+            
+            if (config.aiProvider !== 'simulated' && !config.aiKey) {
+                showToast('❌ Please enter an API key!');
                 return;
             }
-
-            localStorage.setItem('aiBotConfig', JSON.stringify(config));
             
-            document.getElementById('botName').textContent = config.name;
-            document.getElementById('botAvatar').textContent = config.name.substring(0, 2).toUpperCase();
-            
-            const input = document.getElementById('userInput');
-            input.disabled = false;
-            input.placeholder = `Message ${config.name}...`;
-            document.getElementById('sendBtn').disabled = false;
-            document.getElementById('providerStatus').textContent = 
-                config.provider === 'simulated' ? 'Simulated mode active' : 
-                `Using ${config.provider === 'groq' ? 'Groq' : 'OpenRouter'} • Ready`;
-            
-            toggleSettings();
-            showNotification('✅ Settings saved!');
+            localStorage.setItem('viralxConfig', JSON.stringify(config));
+            showToast('✅ AI settings saved!');
         }
 
-        function loadConfig() {
-            const saved = localStorage.getItem('aiBotConfig');
-            if (saved) {
-                try {
-                    config = JSON.parse(saved);
-                    document.getElementById('configName').value = config.name;
-                    document.getElementById('configProvider').value = config.provider || 'groq';
-                    document.getElementById('groqKey').value = config.groqKey || '';
-                    document.getElementById('groqModel').value = config.groqModel || 'llama-3.1-8b-instant';
-                    document.getElementById('openrouterKey').value = config.openrouterKey || '';
-                    document.getElementById('openrouterModel').value = config.openrouterModel || 'google/gemini-2.0-flash-exp:free';
-                    
-                    switchProvider();
-                    
-                    document.getElementById('botName').textContent = config.name;
-                    document.getElementById('botAvatar').textContent = config.name.substring(0, 2).toUpperCase();
-                    
-                    if (config.provider === 'simulated' || config.groqKey || config.openrouterKey) {
-                        const input = document.getElementById('userInput');
-                        input.disabled = false;
-                        input.placeholder = `Message ${config.name}...`;
-                        document.getElementById('sendBtn').disabled = false;
-                    }
-                } catch (e) { console.error('Error loading config:', e); }
-            }
-        }
-
-        async function testConnection() {
-            if (config.provider === 'simulated') {
-                showNotification('✅ Simulated mode works!');
+        async function testAIConnection() {
+            const provider = document.getElementById('aiProvider').value;
+            const key = document.getElementById('aiApiKey').value.trim();
+            
+            if (provider === 'simulated') {
+                showToast('✅ Simulated mode always works!');
                 return;
             }
-
-            const key = config.provider === 'groq' ? config.groqKey : config.openrouterKey;
-            if (!key) { showNotification('❌ Enter API key first!'); return; }
-
-            showNotification('🔄 Testing...');
-
+            
+            if (!key) {
+                showToast('❌ Please enter an API key!');
+                return;
+            }
+            
+            showToast('🔄 Testing connection...');
+            
             try {
                 let success = false;
-                let message = '';
-
-                if (config.provider === 'groq') {
+                if (provider === 'groq') {
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${key}`
-                        },
-                        body: JSON.stringify({
-                            model: config.groqModel,
-                            messages: [{ role: 'user', content: 'Hi' }],
-                            max_tokens: 10
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                        body: JSON.stringify({ 
+                            model: 'llama-3.3-70b-versatile', 
+                            messages: [{role: 'user', content: 'Hi'}], 
+                            max_tokens: 10 
                         })
                     });
-                    const data = await res.json();
-                    success = res.ok && data.choices;
-                    message = data.error?.message || '';
+                    success = res.ok;
                 } else {
                     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${key}`,
-                            'HTTP-Referer': window.location.href,
-                            'X-Title': 'AI Assistant Bot'
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'Authorization': `Bearer ${key}`, 
+                            'HTTP-Referer': window.location.href, 
+                            'X-Title': 'ViralX Bot' 
                         },
-                        body: JSON.stringify({
-                            model: config.openrouterModel,
-                            messages: [{ role: 'user', content: 'Hi' }],
-                            max_tokens: 10
+                        body: JSON.stringify({ 
+                            model: 'google/gemini-2.0-flash-exp:free', 
+                            messages: [{role: 'user', content: 'Hi'}], 
+                            max_tokens: 10 
                         })
                     });
-                    const data = await res.json();
-                    success = res.ok && data.choices;
-                    message = data.error?.message || '';
+                    success = res.ok;
                 }
-
-                if (success) {
-                    showNotification('✅ Connection successful!');
-                } else {
-                    showNotification(`❌ Failed: ${message || 'Check API key'}`);
-                }
-            } catch (error) {
-                showNotification(`❌ Error: ${error.message}`);
+                showToast(success ? '✅ Connection successful!' : '❌ Connection failed. Check your API key.');
+            } catch (e) {
+                showToast('❌ Network error. Please try again.');
             }
         }
 
-        function handleKeyDown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
-        function autoResize(textarea) { textarea.style.height = 'auto'; textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px'; }
-        
-        function quickAsk(text) {
-            if (!config.groqKey && !config.openrouterKey && config.provider !== 'simulated') {
-                showNotification('⚠️ Configure API key in Settings!'); 
-                toggleSettings(); 
+        // Platform selection
+        function selectPlatform(platform) {
+            config.platform = platform;
+            document.querySelectorAll('[data-platform]').forEach(btn => {
+                if (btn.dataset.platform === platform) {
+                    btn.classList.add('border-purple-500', 'bg-purple-500/20');
+                    btn.classList.remove('border-white/20', 'bg-black/30');
+                } else {
+                    btn.classList.remove('border-purple-500', 'bg-purple-500/20');
+                    btn.classList.add('border-white/20', 'bg-black/30');
+                }
+            });
+        }
+
+        // Tone selection
+        function selectTone(tone) {
+            config.tone = tone;
+            document.querySelectorAll('[data-tone]').forEach(btn => {
+                if (btn.dataset.tone === tone) {
+                    btn.classList.add('border-purple-500', 'bg-purple-500/20');
+                    btn.classList.remove('border-white/20', 'bg-black/30');
+                } else {
+                    btn.classList.remove('border-purple-500', 'bg-purple-500/20');
+                    btn.classList.add('border-white/20', 'bg-black/30');
+                }
+            });
+        }
+
+        // Generate content
+        async function generateContent() {
+            const topic = document.getElementById('topicInput').value.trim();
+            if (!topic) {
+                showToast('❌ Please enter a topic!');
                 return;
             }
-            document.getElementById('userInput').value = text; 
-            sendMessage();
-        }
 
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const message = input.value.trim();
-            if (!message || isProcessing) return;
+            if (config.aiProvider !== 'simulated' && !config.aiKey) {
+                showToast('⚠️ Please configure AI settings first!');
+                switchTab('generator');
+                document.getElementById('topicInput').focus();
+                return;
+            }
 
-            addMessage(message, 'user');
-            input.value = ''; 
-            input.style.height = 'auto';
-            isProcessing = true; 
-            showTyping();
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('generatedContent').classList.add('hidden');
 
             try {
-                let response;
-                if (config.provider === 'simulated') {
-                    await new Promise(r => setTimeout(r, 1000));
-                    response = getSimulatedResponse(message);
-                } else if (config.provider === 'groq') {
-                    response = await callGroq(message);
+                let content;
+                if (config.aiProvider === 'simulated') {
+                    await new Promise(r => setTimeout(r, 1500));
+                    content = generateSimulatedContent(topic, config.platform, config.tone);
                 } else {
-                    response = await callOpenRouter(message);
+                    content = await callAI(topic, config.platform, config.tone);
                 }
-                removeTyping();
-                addMessage(response, 'assistant');
+                
+                displayGeneratedContent(content, topic);
+                showToast('✅ Content generated!');
             } catch (error) {
-                removeTyping();
-                addMessage(`❌ Error: ${error.message}\n\nTry a different model in Settings or use Simulated mode.`, 'assistant');
+                showToast('❌ Error: ' + error.message);
             }
-            isProcessing = false;
+
+            document.getElementById('loadingState').classList.add('hidden');
         }
 
-        function getSimulatedResponse(message) {
-            const lowerMsg = message.toLowerCase();
-            for (const [key, value] of Object.entries(simulatedResponses)) {
-                if (lowerMsg.includes(key.replace('default', ''))) return value;
-            }
-            return simulatedResponses['default'];
-        }
-
-        async function callGroq(message) {
-            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${config.groqKey}`
+        function generateSimulatedContent(topic, platform, tone) {
+            const templates = {
+                twitter: {
+                    viral: `🔥 ${topic} is changing everything!\n\nHere's what nobody is talking about:\n\n1. The old way is dead\n2. Adapt or get left behind\n3. Early adopters win big\n\nAre you ready for the shift?\n\n#${topic.replace(/\s+/g, '')} #Trending`,
+                    professional: `Excited to share insights on ${topic}!\n\nKey takeaways from my recent research:\n• Strategic approach matters\n• Data-driven decisions win\n• Continuous learning is essential\n\nWhat's your experience with ${topic}?\n\n#ProfessionalGrowth #${topic.replace(/\s+/g, '')}`,
+                    casual: `Just thinking about ${topic}... 🤔\n\nAnyone else obsessed with this right now?\n\nDrop your thoughts below! 👇\n\n#${topic.replace(/\s+/g, '')} #RandomThoughts`,
+                    story: `3 years ago, I knew nothing about ${topic}.\n\nToday, it's my main focus.\n\nHere's what changed everything 🧵\n\n[Thread 1/5] 👇`
                 },
-                body: JSON.stringify({
-                    model: config.groqModel,
-                    messages: [
-                        { role: 'system', content: `You are ${config.name}, a helpful AI assistant.` },
-                        ...chatHistory.slice(-6).map(h => ({ role: h.role === 'assistant' ? 'assistant' : 'user', content: h.content })),
-                        { role: 'user', content: message }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 2000
-                })
-            });
-
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error?.message || 'API request failed');
-            return data.choices[0].message.content;
-        }
-
-        async function callOpenRouter(message) {
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${config.openrouterKey}`,
-                    'HTTP-Referer': window.location.href,
-                    'X-Title': 'AI Assistant Bot'
+                instagram: {
+                    viral: `✨ ${topic} ✨\n\nSwipe to see why this matters! →\n\nDouble tap if you agree! ❤️\n\n.\n.\n.\n#${topic.replace(/\s+/g, '')} #viral #trending #instagood #explore #fyp #reels #instagram #love #follow #like #photooftheday #picoftheday #beautiful #happy #cute #fashion #style #beauty`,
+                    professional: `💼 ${topic} 💼\n\nBuilding something meaningful takes time.\n\nSave this for later! 📌\n\nWhat's your biggest challenge with ${topic}?\n\n#professional #business #success #mindset #goals #motivation #entrepreneur #career #growth #leadership`,
+                    casual: `Just vibing with ${topic} today 😌\n\nGood energy only! ✨\n\nWhat's your mood today?\n\n#goodvibes #chill #lifestyle #mood #instadaily #photography #love #happy #smile #life`,
+                    story: `From zero to hero with ${topic} 📈\n\nThe journey wasn't easy, but worth it.\n\nFull story in caption! 👇`
                 },
-                body: JSON.stringify({
-                    model: config.openrouterModel,
-                    messages: [
-                        { role: 'system', content: `You are ${config.name}, a helpful AI assistant.` },
-                        ...chatHistory.slice(-6).map(h => ({ role: h.role === 'assistant' ? 'assistant' : 'user', content: h.content })),
-                        { role: 'user', content: message }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 2000
-                })
-            });
-
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error?.message || 'API request failed');
-            return data.choices[0].message.content;
+                facebook: {
+                    viral: `🚨 IMPORTANT: ${topic}\n\nI need to share this with everyone.\n\nWhat do you think? Share if you agree!\n\n#${topic.replace(/\s+/g, '')}`,
+                    professional: `Professional Insights: ${topic}\n\nAfter years of experience, here are my thoughts on approaching this effectively.\n\nI'd love to hear your perspective in the comments.`,
+                    casual: `Random thoughts on ${topic}... 🤔\n\nAnyone else thinking about this lately?\n\nLet me know below!`,
+                    story: `My journey with ${topic} started 5 years ago today.\n\nSo much has changed since then. Grateful for the lessons learned!`
+                },
+                linkedin: {
+                    viral: `🎯 ${topic}: The Game Changer\n\nAfter analyzing 100+ case studies, here's what high-performers do differently:\n\n1. They focus on systems, not goals\n2. They prioritize learning over earning\n3. They build networks strategically\n\nWhich resonates most with you?\n\n#${topic.replace(/\s+/g, '')} #Leadership #CareerGrowth`,
+                    professional: `Reflecting on ${topic} and its impact on our industry.\n\nThree key trends I'm observing:\n\n1. Increased automation\n2. Focus on sustainability\n3. Remote collaboration tools\n\nWhat trends are you seeing?\n\n#IndustryInsights #ProfessionalDevelopment`,
+                    casual: `Quick thought on ${topic}:\n\nSometimes the best opportunities come from unexpected places.\n\nStay open. Stay curious.\n\n#Mindset #Growth`,
+                    story: `How ${topic} transformed my career trajectory:\n\n[2019] Started learning\n[2020] First project\n[2021] Major breakthrough\n[2024] Leading initiatives\n\nThe journey continues...`
+                }
+            };
+            
+            return templates[platform]?.[tone] || templates.twitter.viral;
         }
 
-        function addMessage(content, role) {
-            const container = document.getElementById('chatContainer');
-            const div = document.createElement('div');
-            div.className = 'flex gap-4 items-start';
-            if (role === 'user') {
-                div.innerHTML = `<div class="flex-1 flex justify-end"><div class="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-5 py-3 max-w-[80%]"><p>${escapeHtml(content)}</p></div></div><div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-bold shrink-0">You</div>`;
+        async function callAI(topic, platform, tone) {
+            const platformName = platformConfig[platform].name;
+            const prompt = `Write a ${tone} social media post about "${topic}" for ${platformName}. 
+            Make it engaging and optimized for that platform. 
+            Include relevant hashtags (2-5 hashtags).
+            Keep it concise and impactful.
+            Format it nicely with line breaks where needed.`;
+
+            let response;
+            if (config.aiProvider === 'groq') {
+                response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${config.aiKey}` 
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
             } else {
-                div.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">${config.name.substring(0, 2).toUpperCase()}</div><div class="glass-panel text-gray-200 rounded-2xl rounded-tl-sm px-5 py-3 max-w-[80%]">${formatContent(content)}</div>`;
+                response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${config.aiKey}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'ViralX Bot'
+                    },
+                    body: JSON.stringify({
+                        model: 'google/gemini-2.0-flash-exp:free',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
             }
-            container.appendChild(div); 
-            scrollToBottom();
-            chatHistory.push({ role, content, timestamp: new Date() });
-            if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error?.message || 'API error');
+            return data.choices[0].message.content;
         }
 
-        function formatContent(content) {
-            content = escapeHtml(content);
-            content = content.replace(/```(\w+)?\n([\s\S]*?)```/g, '<div class="code-block p-4 my-2 overflow-x-auto"><code class="text-sm font-mono text-green-400">$2</code></div>');
-            content = content.replace(/`([^`]+)`/g, '<code class="bg-white/10 px-1.5 py-0.5 rounded text-sm font-mono text-pink-400">$1</code>');
-            content = content.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white font-semibold">$1</strong>');
-            content = content.replace(/\n/g, '<br>');
-            return content;
+        function displayGeneratedContent(content, topic) {
+            const container = document.getElementById('generatedContent');
+            const platform = platformConfig[config.platform];
+            const charCount = content.length;
+            const isValid = charCount <= platform.maxLength;
+            
+            container.innerHTML = `
+                <div class="glass-panel rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">${getPlatformEmoji(config.platform)}</span>
+                            <span class="font-semibold text-white">${platform.name}</span>
+                        </div>
+                        <span class="text-sm ${isValid ? 'text-green-400' : 'text-red-400'}">
+                            ${charCount}/${platform.maxLength} characters
+                        </span>
+                    </div>
+                    
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                        <pre class="text-white whitespace-pre-wrap leading-relaxed font-sans">${escapeHtml(content)}</pre>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button onclick="copyToClipboard('${escapeJs(content)}')" class="bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            📋 Copy
+                        </button>
+                        <button onclick="openCompose('twitter', '${escapeJs(content)}')" class="platform-btn twitter-hover bg-black/50 border border-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            🐦 Post on X
+                        </button>
+                        <button onclick="openCompose('instagram', '${escapeJs(content)}')" class="platform-btn instagram-hover bg-black/50 border border-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            📸 Post on IG
+                        </button>
+                        <button onclick="openCompose('facebook', '${escapeJs(content)}')" class="platform-btn facebook-hover bg-black/50 border border-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            👍 Post on FB
+                        </button>
+                    </div>
+
+                    <div class="flex gap-3 pt-2 border-t border-white/10">
+                        <button onclick="saveDraft('${escapeJs(content)}', '${config.platform}')" class="flex-1 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/30 py-2 rounded-lg text-sm font-medium transition-all">
+                            💾 Save Draft
+                        </button>
+                        <button onclick="scheduleReminder('${escapeJs(content)}', '${config.platform}')" class="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 py-2 rounded-lg text-sm font-medium transition-all">
+                            ⏰ Schedule Reminder
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.classList.remove('hidden');
+            generatedPosts.push({ 
+                content, 
+                platform: config.platform, 
+                topic, 
+                timestamp: new Date(),
+                tone: config.tone 
+            });
         }
 
-        function showTyping() {
-            const container = document.getElementById('chatContainer');
+        function getPlatformEmoji(platform) {
+            const emojis = { twitter: '🐦', instagram: '📸', facebook: '👍', linkedin: '💼' };
+            return emojis[platform] || '📝';
+        }
+
+        // Action functions
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => showToast('✅ Copied to clipboard!'));
+        }
+
+        function openCompose(platform, text) {
+            const urls = {
+                twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
+                instagram: 'https://www.instagram.com/', // Instagram doesn't support prefilled text via URL
+                facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(text)}`,
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}`
+            };
+            
+            if (platform === 'instagram') {
+                copyToClipboard(text);
+                showToast('📸 Content copied! Opening Instagram...');
+                setTimeout(() => window.open(urls[platform], '_blank'), 1000);
+            } else {
+                window.open(urls[platform], '_blank', 'width=600,height=400');
+            }
+        }
+
+        function saveDraft(content, platform) {
+            const draft = {
+                id: Date.now(),
+                content,
+                platform,
+                createdAt: new Date().toLocaleString(),
+                topic: document.getElementById('topicInput').value.trim() || 'Untitled'
+            };
+            drafts.unshift(draft);
+            localStorage.setItem('viralxDrafts', JSON.stringify(drafts));
+            updateDraftCount();
+            showToast('💾 Draft saved!');
+        }
+
+        function loadDrafts() {
+            const saved = localStorage.getItem('viralxDrafts');
+            if (saved) {
+                drafts = JSON.parse(saved);
+            }
+        }
+
+        function updateDraftCount() {
+            const count = drafts.length;
+            const badge = document.getElementById('draftCount');
+            badge.textContent = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
+
+        function renderDrafts() {
+            const container = document.getElementById('draftsList');
+            if (drafts.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-12">No drafts saved yet. Generate content to save drafts!</p>';
+                return;
+            }
+            
+            container.innerHTML = drafts.map(draft => `
+                <div class="glass-panel rounded-xl p-4 schedule-item">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${getPlatformEmoji(draft.platform)}</span>
+                            <div>
+                                <p class="text-sm text-white font-medium">${escapeHtml(draft.topic)}</p>
+                                <span class="text-xs text-gray-400">${draft.createdAt}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteDraft(${draft.id})" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
+                    </div>
+                    <pre class="text-gray-300 text-sm mb-3 line-clamp-3 font-sans">${escapeHtml(draft.content)}</pre>
+                    <div class="flex gap-2">
+                        <button onclick="copyToClipboard('${escapeJs(draft.content)}')" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg text-xs transition-all">📋 Copy</button>
+                        <button onclick="openCompose('${draft.platform}', '${escapeJs(draft.content)}')" class="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 py-2 rounded-lg text-xs transition-all">🚀 Post</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteDraft(id) {
+            drafts = drafts.filter(d => d.id !== id);
+            localStorage.setItem('viralxDrafts', JSON.stringify(drafts));
+            updateDraftCount();
+            renderDrafts();
+            showToast('🗑️ Draft deleted');
+        }
+
+        function scheduleReminder(content, platform) {
+            const bestTimes = ['8:00 AM', '12:00 PM', '6:00 PM', '9:00 PM'];
+            const randomTime = bestTimes[Math.floor(Math.random() * bestTimes.length)];
+            
+            const reminder = {
+                id: Date.now(),
+                content: content.substring(0, 100) + '...',
+                platform,
+                time: randomTime,
+                createdAt: new Date().toLocaleString(),
+                date: new Date().toLocaleDateString()
+            };
+            
+            reminders.push(reminder);
+            localStorage.setItem('viralxReminders', JSON.stringify(reminders));
+            renderReminders();
+            showToast(`⏰ Reminder set for ${randomTime}!`);
+        }
+
+        function loadReminders() {
+            const saved = localStorage.getItem('viralxReminders');
+            if (saved) {
+                reminders = JSON.parse(saved);
+            }
+        }
+
+        function renderReminders() {
+            const container = document.getElementById('remindersList');
+            if (reminders.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No reminders set. Create posts and schedule them!</p>';
+                return;
+            }
+            
+            container.innerHTML = reminders.map(reminder => `
+                <div class="schedule-item flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">${getPlatformEmoji(reminder.platform)}</span>
+                        <div>
+                            <p class="text-sm text-white">${escapeHtml(reminder.content)}</p>
+                            <p class="text-xs text-gray-400">${reminder.date} at ${reminder.time}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteReminder(${reminder.id})" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteReminder(id) {
+            reminders = reminders.filter(r => r.id !== id);
+            localStorage.setItem('viralxReminders', JSON.stringify(reminders));
+            renderReminders();
+            showToast('🗑️ Reminder deleted');
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem('viralxConfig');
+            if (saved) {
+                try {
+                    config = JSON.parse(saved);
+                    document.getElementById('aiProvider').value = config.aiProvider || 'groq';
+                    document.getElementById('aiApiKey').value = config.aiKey || '';
+                    document.getElementById('defaultPlatform').value = config.defaultPlatform || 'twitter';
+                    document.getElementById('defaultTone').value = config.defaultTone || 'viral';
+                    
+                    // Apply defaults
+                    config.platform = config.platform || config.defaultPlatform;
+                    config.tone = config.tone || config.defaultTone;
+                    
+                    switchAIProvider();
+                    selectPlatform(config.platform);
+                    selectTone(config.tone);
+                    
+                    showToast('✅ Settings loaded!');
+                } catch (e) {
+                    console.error('Error loading config:', e);
+                }
+            }
+        }
+
+        function saveSettings() {
+            config.defaultPlatform = document.getElementById('defaultPlatform').value;
+            config.defaultTone = document.getElementById('defaultTone').value;
+            
+            localStorage.setItem('viralxConfig', JSON.stringify(config));
+            showToast('✅ Settings saved!');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL your drafts, reminders, and settings. Are you sure?')) {
+                localStorage.removeItem('viralxDrafts');
+                localStorage.removeItem('viralxReminders');
+                localStorage.removeItem('viralxConfig');
+                
+                drafts = [];
+                reminders = [];
+                config = {
+                    aiProvider: 'groq',
+                    aiKey: '',
+                    platform: 'twitter',
+                    tone: 'viral',
+                    defaultPlatform: 'twitter',
+                    defaultTone: 'viral'
+                };
+                
+                updateDraftCount();
+                renderDrafts();
+                renderReminders();
+                loadConfig();
+                
+                showToast('🗑️ All data cleared!');
+            }
+        }
+
+        // Utility functions
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast glass-panel px-4 py-3 rounded-lg text-sm flex items-center gap-2';
+            toast.innerHTML = message;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
             const div = document.createElement('div');
-            div.id = 'typingIndicator';
-            div.className = 'flex gap-4 items-start';
-            div.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0 ai-thinking">${config.name.substring(0, 2).toUpperCase()}</div><div class="glass-panel rounded-2xl rounded-tl-sm px-5 py-4 flex items-center gap-1"><div class="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div><div class="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div><div class="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div></div>`;
-            container.appendChild(div);
-            scrollToBottom();
+            div.textContent = text;
+            return div.innerHTML;
         }
 
-        function removeTyping() { const indicator = document.getElementById('typingIndicator'); if (indicator) indicator.remove(); }
-        function scrollToBottom() { const container = document.getElementById('chatContainer'); container.scrollTop = container.scrollHeight; }
-        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-        function clearChat() { if (confirm('Clear chat?')) { document.getElementById('chatContainer').innerHTML = `<div class="flex gap-4 items-start"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">${config.name.substring(0, 2).toUpperCase()}</div><div class="glass-panel rounded-2xl rounded-tl-sm px-5 py-3 text-gray-200 max-w-[80%]"><p class="mb-2">Namaste! 🙏 I'm ${config.name}.</p><p class="text-sm text-gray-400">Chat cleared!</p></div></div>`; chatHistory = []; } }
-        function showNotification(message) {
-            const existing = document.querySelector('.notification'); if (existing) existing.remove();
-            const notif = document.createElement('div');
-            notif.className = 'notification fixed top-20 right-6 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-xl border border-white/10 z-50 text-sm max-w-xs';
-            notif.textContent = message;
-            document.body.appendChild(notif);
-            setTimeout(() => { notif.style.opacity = '0'; setTimeout(() => notif.remove(), 300); }, 4000);
+        function escapeJs(text) {
+            return text
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
         }
-        document.addEventListener('click', (e) => {
-            const settings = document.getElementById('settingsPanel');
-            if (!settings.contains(e.target) && !e.target.closest('button[onclick="toggleSettings()"]') && !settings.classList.contains('hidden')) {
-                settings.classList.add('hidden');
+
+        // Initialize settings form
+        document.getElementById('defaultPlatform').addEventListener('change', saveSettings);
+        document.getElementById('defaultTone').addEventListener('change', saveSettings);
+        
+        // Add enter key support for topic input
+        document.getElementById('topicInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                generateContent();
             }
         });
+
+        // Initialize
+        switchAIProvider();
     </script>
 </body>
 </html>

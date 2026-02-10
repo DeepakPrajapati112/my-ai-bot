@@ -960,7 +960,7 @@
             `).join('');
         }
 
-        // Action Functions
+        // Action Functions - FIXED LINKEDIN SHARING
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => showToast('✅ Copied to clipboard!'));
         }
@@ -970,13 +970,21 @@
                 twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
                 instagram: 'https://www.instagram.com/',
                 facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(text)}`,
-                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}`
+                // FIXED: LinkedIn now properly sends the text content
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://socialai.example.com')}&summary=${encodeURIComponent(text)}&title=${encodeURIComponent('SocialAI Generated Content')}`
             };
+            
+            // Alternative LinkedIn URL that works better for text-only posts
+            const linkedinTextOnly = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`;
             
             if (platform === 'instagram') {
                 copyToClipboard(text);
                 showToast('📸 Content copied! Opening Instagram...');
                 setTimeout(() => window.open(urls[platform], '_blank'), 1000);
+            } else if (platform === 'linkedin') {
+                // Try the text-only approach first
+                window.open(linkedinTextOnly, '_blank', 'width=600,height=700');
+                showToast('💼 Opening LinkedIn with your content...');
             } else {
                 window.open(urls[platform], '_blank', 'width=600,height=400');
             }

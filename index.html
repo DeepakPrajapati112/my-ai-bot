@@ -3,72 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViralX Bot - Social Media Assistant</title>
+    <title>ViralX Bot - Social Media & Blog Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0a0a;
-            color: #e5e5e5;
-        }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; }
         .brand-font { font-family: 'Space Grotesk', sans-serif; }
-        .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .neon-glow {
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3), 0 0 40px rgba(118, 75, 162, 0.2);
-        }
-        .platform-btn {
-            transition: all 0.3s ease;
-        }
-        .platform-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
+        .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass-panel { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .neon-glow { box-shadow: 0 0 20px rgba(102,126,234,0.5), 0 0 40px rgba(118,75,162,0.3); }
+        .platform-btn { transition: all 0.3s; }
+        .platform-btn:hover { transform: translateY(-2px); }
         .twitter-hover:hover { background: #1da1f2; border-color: #1da1f2; }
-        .instagram-hover:hover { 
-            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
-            border-color: transparent;
-        }
-        .facebook-hover:hover { background: #4267B2; border-color: #4267B2; }
-        .linkedin-hover:hover { background: #0077b5; border-color: #0077b5; }
-        
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
-        }
+        .instagram-hover:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-color: transparent; }
+        .facebook-hover:hover { background: #1877f2; border-color: #1877f2; }
+        .linkedin-hover:hover { background: #0a66c2; border-color: #0a66c2; }
+        .schedule-item { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 20px rgba(102,126,234,0.3); } 50% { box-shadow: 0 0 40px rgba(102,126,234,0.6); } }
         .ai-thinking { animation: pulse-glow 2s infinite; }
-        
-        @keyframes typing {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
         .typing-dot { animation: typing 1.4s infinite; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        
-        .schedule-card {
-            transition: all 0.3s ease;
-        }
-        .schedule-card:hover {
-            transform: translateX(5px);
-            border-left: 3px solid #667eea;
-        }
-        
+        @keyframes typing { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #667eea; }
+        .toast { animation: toastSlide 0.3s ease-out; }
+        @keyframes toastSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .content-type-btn.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -77,84 +39,161 @@
     <nav class="fixed top-0 w-full z-50 glass-panel border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center neon-glow">
-                        <i class="fas fa-rocket text-white text-lg"></i>
-                    </div>
-                    <span class="brand-font text-2xl font-bold gradient-text">ViralX Bot</span>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold">V</div>
+                    <span class="brand-font text-xl font-bold gradient-text">ViralX Bot</span>
                 </div>
                 <div class="flex items-center gap-4">
-                    <button onclick="showTab('generator')" class="nav-btn px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-all">
-                        <i class="fas fa-magic mr-2"></i>Generate
-                    </button>
-                    <button onclick="showTab('drafts')" class="nav-btn px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white hover:bg-white/10 transition-all">
-                        <i class="fas fa-save mr-2"></i>Drafts <span id="draftCount" class="bg-purple-600 text-xs px-2 py-0.5 rounded-full ml-1">0</span>
-                    </button>
-                    <button onclick="showTab('schedule')" class="nav-btn px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white hover:bg-white/10 transition-all">
-                        <i class="fas fa-calendar-alt mr-2"></i>Schedule
-                    </button>
+                    <button onclick="switchTab('generator')" class="nav-tab tab-active px-4 py-2 rounded-full text-sm font-medium transition-all bg-gradient-to-r from-purple-600 to-blue-600 text-white">Generator</button>
+                    <button onclick="switchTab('drafts')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Drafts <span id="draftCount" class="ml-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span></button>
+                    <button onclick="switchTab('blogs')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Blogs</button>
+                    <button onclick="switchTab('schedule')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Schedule</button>
+                    <button onclick="switchTab('settings')" class="nav-tab px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Settings</button>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-20 pb-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+    <main class="pt-20 pb-12 px-4 max-w-7xl mx-auto">
 
-        <!-- Generator Tab -->
+        <!-- GENERATOR TAB -->
         <div id="generator-tab" class="space-y-6">
             
             <!-- Hero -->
-            <div class="text-center py-8">
-                <h1 class="text-4xl md:text-5xl font-bold brand-font mb-4">
-                    Create <span class="gradient-text">Viral</span> Content
-                </h1>
-                <p class="text-gray-400 max-w-2xl mx-auto">
-                    Generate engaging posts for all platforms. One-click to share or schedule for later.
-                </p>
+            <div class="text-center space-y-2 mb-8">
+                <h1 class="text-4xl md:text-5xl font-bold brand-font">Create <span class="gradient-text">Viral</span> Content</h1>
+                <p class="text-gray-400">Generate social media posts or blog articles with AI</p>
             </div>
 
-            <!-- Input Panel -->
-            <div class="glass-panel rounded-2xl p-6 neon-glow">
+            <!-- Content Type Selection -->
+            <div class="glass-panel rounded-2xl p-6 max-w-4xl mx-auto">
+                <h3 class="text-lg font-semibold mb-4">Select Content Type</h3>
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button onclick="selectContentType('post')" class="content-type-btn active p-4 rounded-xl border border-white/20 text-center" data-type="post">
+                        <div class="text-2xl mb-2">📱</div>
+                        <div class="font-medium">Social Media Post</div>
+                        <div class="text-xs text-gray-400 mt-1">Short posts for Twitter, Instagram, etc.</div>
+                    </button>
+                    <button onclick="selectContentType('blog')" class="content-type-btn p-4 rounded-xl border border-white/20 text-center" data-type="blog">
+                        <div class="text-2xl mb-2">📝</div>
+                        <div class="font-medium">Blog Article</div>
+                        <div class="text-xs text-gray-400 mt-1">Long-form articles with headings</div>
+                    </button>
+                </div>
+
+                <!-- AI Provider Selection -->
+                <div class="border-t border-white/10 pt-6">
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">AI Provider</label>
+                            <select id="aiProvider" onchange="switchAIProvider()" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                                <option value="groq">Groq (Free - Fast)</option>
+                                <option value="openrouter">OpenRouter (Free)</option>
+                                <option value="simulated">Simulated (No API)</option>
+                            </select>
+                        </div>
+                        <div id="aiKeyContainer">
+                            <label class="block text-sm text-gray-400 mb-2">API Key</label>
+                            <div class="flex gap-2">
+                                <input type="password" id="aiApiKey" placeholder="Enter API key..." class="flex-1 bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm font-mono">
+                                <button onclick="togglePassword('aiApiKey')" class="bg-white/10 hover:bg-white/20 px-3 rounded-lg">👁️</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="saveAISettings()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">💾 Save Settings</button>
+                        <button onclick="testAIConnection()" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">🧪 Test</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POST GENERATOR -->
+            <div id="postGenerator" class="glass-panel rounded-2xl p-6 max-w-4xl mx-auto neon-glow">
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">What's your topic?</label>
-                        <input type="text" id="topicInput" placeholder="e.g., AI productivity tips, fitness motivation, startup advice..." 
-                            class="w-full bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors">
+                        <input type="text" id="topicInput" placeholder="e.g., AI productivity, morning routines, crypto trends..." class="w-full bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors">
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <button onclick="setTone('viral')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 hover:border-purple-500 hover:bg-purple-500/20 transition-all text-sm font-medium text-center" data-tone="viral">
-                            <i class="fas fa-fire text-orange-500 mb-1 block"></i> Viral
-                        </button>
-                        <button onclick="setTone('professional')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 hover:border-blue-500 hover:bg-blue-500/20 transition-all text-sm font-medium text-center" data-tone="professional">
-                            <i class="fas fa-briefcase text-blue-500 mb-1 block"></i> Professional
-                        </button>
-                        <button onclick="setTone('casual')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 hover:border-green-500 hover:bg-green-500/20 transition-all text-sm font-medium text-center" data-tone="casual">
-                            <i class="fas fa-coffee text-green-500 mb-1 block"></i> Casual
-                        </button>
-                        <button onclick="setTone('story')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 hover:border-pink-500 hover:bg-pink-500/20 transition-all text-sm font-medium text-center" data-tone="story">
-                            <i class="fas fa-book-open text-pink-500 mb-1 block"></i> Story
-                        </button>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Platform</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button onclick="selectPlatform('twitter')" class="platform-btn twitter-hover p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium flex items-center justify-center gap-2" data-platform="twitter">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                X/Twitter
+                            </button>
+                            <button onclick="selectPlatform('instagram')" class="platform-btn instagram-hover p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium flex items-center justify-center gap-2" data-platform="instagram">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                Instagram
+                            </button>
+                            <button onclick="selectPlatform('facebook')" class="platform-btn facebook-hover p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium flex items-center justify-center gap-2" data-platform="facebook">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                Facebook
+                            </button>
+                            <button onclick="selectPlatform('linkedin')" class="platform-btn linkedin-hover p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium flex items-center justify-center gap-2" data-platform="linkedin">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                                LinkedIn
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-4 items-center">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="includeEmojis" checked class="w-4 h-4 rounded border-gray-600 text-purple-600 focus:ring-purple-500 bg-black/50">
-                            <span class="text-sm text-gray-300">Add Emojis</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="includeHashtags" checked class="w-4 h-4 rounded border-gray-600 text-purple-600 focus:ring-purple-500 bg-black/50">
-                            <span class="text-sm text-gray-300">Add Hashtags</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="includeCTA" checked class="w-4 h-4 rounded border-gray-600 text-purple-600 focus:ring-purple-500 bg-black/50">
-                            <span class="text-sm text-gray-300">Add Call-to-Action</span>
-                        </label>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Tone</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button onclick="selectTone('viral')" class="tone-btn p-3 rounded-xl border border-purple-500 bg-purple-500/20 text-sm font-medium" data-tone="viral">🔥 Viral</button>
+                            <button onclick="selectTone('professional')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-tone="professional">💼 Professional</button>
+                            <button onclick="selectTone('casual')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-tone="casual">😊 Casual</button>
+                            <button onclick="selectTone('story')" class="tone-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-tone="story">📖 Story</button>
+                        </div>
                     </div>
 
-                    <button onclick="generateContent()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-4 rounded-xl text-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/30">
-                        <i class="fas fa-sparkles mr-2"></i> Generate Viral Content ✨
+                    <button onclick="generateContent()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-4 rounded-xl text-lg transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/30">
+                        ✨ Generate Social Media Post
+                    </button>
+                </div>
+            </div>
+
+            <!-- BLOG GENERATOR -->
+            <div id="blogGenerator" class="hidden glass-panel rounded-2xl p-6 max-w-4xl mx-auto neon-glow">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Blog Topic</label>
+                        <input type="text" id="blogTopicInput" placeholder="e.g., The Future of AI in Marketing, How to Build a Personal Brand..." class="w-full bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors">
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Writing Style</label>
+                            <select id="blogStyle" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                                <option value="professional">📈 Professional</option>
+                                <option value="conversational">💬 Conversational</option>
+                                <option value="persuasive">🎯 Persuasive</option>
+                                <option value="educational">📚 Educational</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Length</label>
+                            <select id="blogLength" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                                <option value="short">📄 Short (300-500 words)</option>
+                                <option value="medium" selected>📝 Medium (500-800 words)</option>
+                                <option value="long">📚 Long (800-1200 words)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Target Audience</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button onclick="selectAudience('general')" class="audience-btn p-3 rounded-xl border border-purple-500 bg-purple-500/20 text-sm font-medium" data-audience="general">🌍 General</button>
+                            <button onclick="selectAudience('beginners')" class="audience-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-audience="beginners">🎓 Beginners</button>
+                            <button onclick="selectAudience('professionals')" class="audience-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-audience="professionals">💼 Professionals</button>
+                            <button onclick="selectAudience('tech')" class="audience-btn p-3 rounded-xl border border-white/20 bg-black/30 text-sm font-medium" data-audience="tech">🤖 Tech</button>
+                        </div>
+                    </div>
+
+                    <button onclick="generateBlog()" class="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold py-4 rounded-xl text-lg transition-all transform hover:scale-[1.02] shadow-lg shadow-green-500/30">
+                        📝 Generate Blog Article
                     </button>
                 </div>
             </div>
@@ -162,205 +201,300 @@
             <!-- Loading State -->
             <div id="loadingState" class="hidden text-center py-12">
                 <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
-                <p class="mt-4 text-gray-400">Crafting viral content...</p>
+                <p class="mt-4 text-gray-400">Crafting amazing content...</p>
             </div>
 
-            <!-- Results -->
-            <div id="resultsContainer" class="hidden space-y-6">
-                <!-- Generated content will appear here -->
+            <!-- Generated Content -->
+            <div id="generatedContent" class="hidden space-y-4 max-w-4xl mx-auto">
+                <!-- Content will appear here -->
             </div>
-
         </div>
 
-        <!-- Drafts Tab -->
+        <!-- DRAFTS TAB -->
         <div id="drafts-tab" class="hidden space-y-6">
-            <div class="text-center py-8">
-                <h2 class="text-3xl font-bold brand-font mb-4">Saved Drafts</h2>
-                <p class="text-gray-400">Your generated content saved for later</p>
-            </div>
-            <div id="draftsList" class="space-y-4">
-                <div class="text-center py-12 text-gray-500">
-                    <i class="fas fa-inbox text-4xl mb-4 opacity-50"></i>
-                    <p>No drafts saved yet. Generate some content first!</p>
-                </div>
+            <h2 class="text-3xl font-bold brand-font gradient-text">Your Drafts</h2>
+            <div id="draftsList" class="grid gap-4">
+                <p class="text-gray-500 text-center py-12">No drafts saved yet. Generate content to save drafts!</p>
             </div>
         </div>
 
-        <!-- Schedule Tab -->
-        <div id="schedule-tab" class="hidden space-y-6">
-            <div class="text-center py-8">
-                <h2 class="text-3xl font-bold brand-font mb-4">Best Times to Post</h2>
-                <p class="text-gray-400">Optimal posting times for maximum engagement</p>
+        <!-- BLOGS TAB -->
+        <div id="blogs-tab" class="hidden space-y-6">
+            <h2 class="text-3xl font-bold brand-font gradient-text">Your Blog Articles</h2>
+            <div id="blogsList" class="grid gap-4">
+                <p class="text-gray-500 text-center py-12">No blog articles saved yet. Generate a blog to see it here!</p>
             </div>
+        </div>
+
+        <!-- SCHEDULE TAB -->
+        <div id="schedule-tab" class="hidden space-y-6">
+            <h2 class="text-3xl font-bold brand-font gradient-text">Best Times to Post</h2>
             
             <div class="grid md:grid-cols-2 gap-6">
-                <!-- X/Twitter -->
-                <div class="glass-panel rounded-xl p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <i class="fab fa-twitter text-2xl text-blue-400"></i>
-                        <h3 class="font-bold text-lg">X (Twitter)</h3>
-                    </div>
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">⏰ Optimal Posting Times (IST)</h3>
                     <div class="space-y-3">
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-green-400 font-semibold">🌅 8:00 AM</span>
-                                <span class="text-xs text-gray-400">Morning commute</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Best for news & updates</p>
+                        <div class="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                            <span class="text-green-400 font-medium">🌅 Morning</span>
+                            <span class="text-white">8:00 - 10:00 AM</span>
                         </div>
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-yellow-400 font-semibold">🌞 12:00 PM</span>
-                                <span class="text-xs text-gray-400">Lunch break</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Highest engagement window</p>
+                        <div class="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                            <span class="text-blue-400 font-medium">🌞 Lunch</span>
+                            <span class="text-white">12:00 - 2:00 PM</span>
                         </div>
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-purple-400 font-semibold">🌆 6:00 PM</span>
-                                <span class="text-xs text-gray-400">Evening wind-down</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Great for threads & stories</p>
+                        <div class="flex items-center justify-between p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                            <span class="text-purple-400 font-medium">🌆 Evening</span>
+                            <span class="text-white">6:00 - 9:00 PM</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-pink-500/10 border border-pink-500/30 rounded-lg">
+                            <span class="text-pink-400 font-medium">🌙 Night</span>
+                            <span class="text-white">9:00 - 11:00 PM</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Instagram -->
-                <div class="glass-panel rounded-xl p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <i class="fab fa-instagram text-2xl text-pink-500"></i>
-                        <h3 class="font-bold text-lg">Instagram</h3>
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-xl font-semibold mb-4">📅 Platform-Specific</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <span class="text-blue-400 font-bold">X/Twitter:</span>
+                            <span class="text-gray-300"> Best Tue-Thu, 9AM & 7-9PM</span>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <span class="text-pink-400 font-bold">Instagram:</span>
+                            <span class="text-gray-300"> Best Wed-Fri, 11AM & 2PM</span>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <span class="text-blue-600 font-bold">Facebook:</span>
+                            <span class="text-gray-300"> Best Wed, 11AM & 1PM</span>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <span class="text-blue-700 font-bold">LinkedIn:</span>
+                            <span class="text-gray-300"> Best Tue-Thu, 8-10AM & 5-6PM</span>
+                        </div>
                     </div>
-                    <div class="space-y-3">
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-green-400 font-semibold">🌅 11:00 AM</span>
-                                <span class="text-xs text-gray-400">Mid-morning</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Best for Reels & Stories</p>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-xl font-semibold mb-4">🎯 Your Scheduled Reminders</h3>
+                <div id="remindersList" class="space-y-3">
+                    <p class="text-gray-500 text-center py-8">No reminders set. Create posts and schedule them!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settings-tab" class="hidden space-y-6 max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold brand-font gradient-text">Settings</h2>
+            
+            <div class="glass-panel rounded-2xl p-6 space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Default Settings</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Default Platform</label>
+                            <select id="defaultPlatform" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                                <option value="twitter">X/Twitter</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </select>
                         </div>
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-yellow-400 font-semibold">🌞 2:00 PM</span>
-                                <span class="text-xs text-gray-400">Afternoon break</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">High engagement for posts</p>
-                        </div>
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-purple-400 font-semibold">🌃 7:00 PM</span>
-                                <span class="text-xs text-gray-400">Evening leisure</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Prime time for engagement</p>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Default Tone</label>
+                            <select id="defaultTone" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                                <option value="viral">Viral</option>
+                                <option value="professional">Professional</option>
+                                <option value="casual">Casual</option>
+                                <option value="story">Story</option>
+                            </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- LinkedIn -->
-                <div class="glass-panel rounded-xl p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <i class="fab fa-linkedin text-2xl text-blue-600"></i>
-                        <h3 class="font-bold text-lg">LinkedIn</h3>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-green-400 font-semibold">🌅 8:00 AM</span>
-                                <span class="text-xs text-gray-400">Workday start</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Professional content peak</p>
-                        </div>
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-yellow-400 font-semibold">🌞 12:00 PM</span>
-                                <span class="text-xs text-gray-400">Lunch hour</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">High professional engagement</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Facebook -->
-                <div class="glass-panel rounded-xl p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <i class="fab fa-facebook text-2xl text-blue-500"></i>
-                        <h3 class="font-bold text-lg">Facebook</h3>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-green-400 font-semibold">🌅 9:00 AM</span>
-                                <span class="text-xs text-gray-400">Morning</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Best for shares & links</p>
-                        </div>
-                        <div class="schedule-card bg-black/30 p-3 rounded-lg border-l-2 border-transparent">
-                            <div class="flex justify-between items-center">
-                                <span class="text-purple-400 font-semibold">🌃 8:00 PM</span>
-                                <span class="text-xs text-gray-400">Evening</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Peak engagement time</p>
-                        </div>
-                    </div>
+                <div class="border-t border-white/10 pt-6">
+                    <h3 class="text-lg font-semibold mb-3 text-red-400">Danger Zone</h3>
+                    <button onclick="clearAllData()" class="w-full bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 py-3 rounded-lg text-sm font-medium transition-colors">
+                        🗑️ Clear All Data
+                    </button>
                 </div>
             </div>
         </div>
 
     </main>
 
-    <!-- Toast Notifications -->
+    <!-- Toast Container -->
     <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
     <script>
         // State
-        let currentTone = 'viral';
-        let drafts = JSON.parse(localStorage.getItem('viralx_drafts') || '[]');
+        let config = {
+            aiProvider: 'groq',
+            aiKey: '',
+            platform: 'twitter',
+            tone: 'viral',
+            defaultPlatform: 'twitter',
+            defaultTone: 'viral',
+            contentType: 'post', // 'post' or 'blog'
+            audience: 'general'
+        };
+        
+        let drafts = [];
+        let blogs = [];
+        let reminders = [];
         let generatedPosts = [];
 
-        // Templates
-        const templates = {
-            viral: (topic) => [
-                `🔥 ${topic} is changing everything.\n\nHere's what nobody tells you:\n\nThread 🧵`,
-                `Unpopular opinion:\n\n${topic} is overrated.\n\nHere's why 👇`,
-                `Stop what you're doing.\n\nThis ${topic} hack will save you 10 hours/week:\n\n🧵`
-            ],
-            professional: (topic) => [
-                `3 lessons I learned from ${topic}:\n\n1. Consistency beats intensity\n2. Systems > Goals\n3. Patience compounds\n\nWhich resonates with you?`,
-                `The ${topic} landscape is evolving.\n\nHere are the trends I'm watching:\n\n• AI integration\n• Remote collaboration\n• Data-driven decisions\n\nWhat's your prediction?`,
-                `Building expertise in ${topic}?\n\nFocus on these 3 pillars:\n\n✓ Fundamentals\n✓ Practical application\n✓ Continuous learning\n\nRome wasn't built in a day.`
-            ],
-            casual: (topic) => [
-                `POV: You finally mastered ${topic}\n\n*immediate urge to tell everyone*`,
-                `Me explaining ${topic} to my friends:\n\n"It's like... you know... that thing"\n\n*they don't know*`,
-                `3am thoughts about ${topic}:\n\nWhy didn't I start sooner? 😅`
-            ],
-            story: (topic) => [
-                `2 years ago, I knew nothing about ${topic}.\n\nToday, it's my full-time income.\n\nHere's the exact roadmap:\n\n🧵`,
-                `I failed at ${topic} for 365 days.\n\nThen one small change changed everything.\n\nThe lesson?`,
-                `Everyone laughed when I started ${topic}.\n\nNow they ask for advice.\n\nThe secret?`
-            ]
+        // Platform configs
+        const platformConfig = {
+            twitter: { name: 'X/Twitter', maxLength: 280, hashtagCount: 2 },
+            instagram: { name: 'Instagram', maxLength: 2200, hashtagCount: 10 },
+            facebook: { name: 'Facebook', maxLength: 63206, hashtagCount: 5 },
+            linkedin: { name: 'LinkedIn', maxLength: 3000, hashtagCount: 3 }
         };
 
-        const ctas = [
-            "What's your take? 👇",
-            "Agree or disagree?",
-            "Drop a 🔥 if you agree",
-            "Save this for later 📌",
-            "Tag someone who needs this 👇",
-            "Which point hit home? 💭"
-        ];
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            loadDrafts();
+            loadBlogs();
+            loadReminders();
+            selectPlatform(config.platform || 'twitter');
+            selectTone(config.tone || 'viral');
+            selectAudience(config.audience || 'general');
+            updateDraftCount();
+        });
 
-        const hashtags = {
-            viral: ['#viral', '#trending', '#growth', '#success'],
-            professional: ['#career', '#leadership', '#business', '#productivity'],
-            casual: ['#life', '#motivation', '#mindset', '#goals'],
-            story: ['#journey', '#inspiration', '#entrepreneur', '#hustle']
-        };
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('[id$="-tab"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tab + '-tab').classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('tab-active', 'bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'text-white');
+                btn.classList.add('text-gray-400');
+            });
+            
+            const activeBtn = document.querySelector(`button[onclick="switchTab('${tab}')"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('tab-active', 'bg-gradient-to-r', 'from-purple-600', 'to-blue-600', 'text-white');
+                activeBtn.classList.remove('text-gray-400');
+            }
+            
+            if (tab === 'drafts') {
+                renderDrafts();
+            } else if (tab === 'blogs') {
+                renderBlogs();
+            } else if (tab === 'schedule') {
+                renderReminders();
+            }
+        }
 
-        function setTone(tone) {
-            currentTone = tone;
-            document.querySelectorAll('.tone-btn').forEach(btn => {
-                if(btn.dataset.tone === tone) {
+        // Content Type Selection
+        function selectContentType(type) {
+            config.contentType = type;
+            document.querySelectorAll('.content-type-btn').forEach(btn => {
+                if (btn.dataset.type === type) {
+                    btn.classList.add('active');
+                    btn.classList.remove('border-white/20');
+                } else {
+                    btn.classList.remove('active');
+                    btn.classList.add('border-white/20');
+                }
+            });
+            
+            if (type === 'post') {
+                document.getElementById('postGenerator').classList.remove('hidden');
+                document.getElementById('blogGenerator').classList.add('hidden');
+                document.querySelector('#generator-tab button[onclick="generateContent()"]').textContent = '✨ Generate Social Media Post';
+            } else {
+                document.getElementById('postGenerator').classList.add('hidden');
+                document.getElementById('blogGenerator').classList.remove('hidden');
+                document.querySelector('#generator-tab button[onclick="generateContent()"]').textContent = '📝 Generate Blog Article';
+            }
+        }
+
+        // AI Provider switching
+        function switchAIProvider() {
+            const provider = document.getElementById('aiProvider').value;
+            document.getElementById('aiKeyContainer').style.display = provider === 'simulated' ? 'none' : 'block';
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function saveAISettings() {
+            config.aiProvider = document.getElementById('aiProvider').value;
+            config.aiKey = document.getElementById('aiApiKey').value.trim();
+            
+            if (config.aiProvider !== 'simulated' && !config.aiKey) {
+                showToast('❌ Please enter an API key!');
+                return;
+            }
+            
+            localStorage.setItem('viralxConfig', JSON.stringify(config));
+            showToast('✅ AI settings saved!');
+        }
+
+        async function testAIConnection() {
+            const provider = document.getElementById('aiProvider').value;
+            const key = document.getElementById('aiApiKey').value.trim();
+            
+            if (provider === 'simulated') {
+                showToast('✅ Simulated mode always works!');
+                return;
+            }
+            
+            if (!key) {
+                showToast('❌ Please enter an API key!');
+                return;
+            }
+            
+            showToast('🔄 Testing connection...');
+            
+            try {
+                let success = false;
+                if (provider === 'groq') {
+                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                        body: JSON.stringify({ 
+                            model: 'llama-3.3-70b-versatile', 
+                            messages: [{role: 'user', content: 'Hi'}], 
+                            max_tokens: 10 
+                        })
+                    });
+                    success = res.ok;
+                } else {
+                    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'Authorization': `Bearer ${key}`, 
+                            'HTTP-Referer': window.location.href, 
+                            'X-Title': 'ViralX Bot' 
+                        },
+                        body: JSON.stringify({ 
+                            model: 'google/gemini-2.0-flash-exp:free', 
+                            messages: [{role: 'user', content: 'Hi'}], 
+                            max_tokens: 10 
+                        })
+                    });
+                    success = res.ok;
+                }
+                showToast(success ? '✅ Connection successful!' : '❌ Connection failed. Check your API key.');
+            } catch (e) {
+                showToast('❌ Network error. Please try again.');
+            }
+        }
+
+        // Platform selection
+        function selectPlatform(platform) {
+            config.platform = platform;
+            document.querySelectorAll('[data-platform]').forEach(btn => {
+                if (btn.dataset.platform === platform) {
                     btn.classList.add('border-purple-500', 'bg-purple-500/20');
                     btn.classList.remove('border-white/20', 'bg-black/30');
                 } else {
@@ -370,271 +504,761 @@
             });
         }
 
-        function showTab(tab) {
-            ['generator', 'drafts', 'schedule'].forEach(t => {
-                document.getElementById(`${t}-tab`).classList.add('hidden');
+        // Tone selection
+        function selectTone(tone) {
+            config.tone = tone;
+            document.querySelectorAll('[data-tone]').forEach(btn => {
+                if (btn.dataset.tone === tone) {
+                    btn.classList.add('border-purple-500', 'bg-purple-500/20');
+                    btn.classList.remove('border-white/20', 'bg-black/30');
+                } else {
+                    btn.classList.remove('border-purple-500', 'bg-purple-500/20');
+                    btn.classList.add('border-white/20', 'bg-black/30');
+                }
             });
-            document.getElementById(`${tab}-tab`).classList.remove('hidden');
-            
-            if(tab === 'drafts') loadDrafts();
-            updateDraftCount();
         }
 
-        function generateContent() {
+        // Audience selection
+        function selectAudience(audience) {
+            config.audience = audience;
+            document.querySelectorAll('[data-audience]').forEach(btn => {
+                if (btn.dataset.audience === audience) {
+                    btn.classList.add('border-purple-500', 'bg-purple-500/20');
+                    btn.classList.remove('border-white/20', 'bg-black/30');
+                } else {
+                    btn.classList.remove('border-purple-500', 'bg-purple-500/20');
+                    btn.classList.add('border-white/20', 'bg-black/30');
+                }
+            });
+        }
+
+        // Generate content (posts or blogs)
+        async function generateContent() {
+            if (config.contentType === 'post') {
+                await generatePost();
+            } else {
+                await generateBlog();
+            }
+        }
+
+        async function generatePost() {
             const topic = document.getElementById('topicInput').value.trim();
-            if(!topic) {
-                showToast('Please enter a topic first!', 'error');
+            if (!topic) {
+                showToast('❌ Please enter a topic!');
+                return;
+            }
+
+            if (config.aiProvider !== 'simulated' && !config.aiKey) {
+                showToast('⚠️ Please configure AI settings first!');
                 return;
             }
 
             document.getElementById('loadingState').classList.remove('hidden');
-            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('generatedContent').classList.add('hidden');
 
-            setTimeout(() => {
-                const posts = createPosts(topic);
-                displayResults(posts);
-                document.getElementById('loadingState').classList.add('hidden');
-                document.getElementById('resultsContainer').classList.remove('hidden');
-            }, 1500);
-        }
-
-        function createPosts(topic) {
-            const toneTemplates = templates[currentTone] || templates.viral;
-            const includeEmojis = document.getElementById('includeEmojis').checked;
-            const includeHashtags = document.getElementById('includeHashtags').checked;
-            const includeCTA = document.getElementById('includeCTA').checked;
-
-            return toneTemplates(topic).map((content, index) => {
-                let text = content;
-                
-                if(includeCTA) {
-                    text += `\n\n${ctas[Math.floor(Math.random() * ctas.length)]}`;
+            try {
+                let content;
+                if (config.aiProvider === 'simulated') {
+                    await new Promise(r => setTimeout(r, 1500));
+                    content = generateSimulatedPost(topic, config.platform, config.tone);
+                } else {
+                    content = await callAIPost(topic, config.platform, config.tone);
                 }
                 
-                if(includeHashtags) {
-                    const tags = hashtags[currentTone].slice(0, 3).join(' ');
-                    text += `\n\n${tags}`;
-                }
-
-                return {
-                    id: Date.now() + index,
-                    text: text,
-                    topic: topic,
-                    tone: currentTone,
-                    platform: 'universal',
-                    created: new Date().toISOString()
-                };
-            });
-        }
-
-        function displayResults(posts) {
-            generatedPosts = posts;
-            const container = document.getElementById('resultsContainer');
-            
-            container.innerHTML = posts.map(post => `
-                <div class="glass-panel rounded-2xl p-6 neon-glow">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2">
-                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 capitalize">
-                                ${post.tone}
-                            </span>
-                            <span class="text-xs text-gray-500">${post.topic}</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="saveDraft('${post.id}')" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white" title="Save Draft">
-                                <i class="fas fa-save"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="bg-black/30 rounded-xl p-4 mb-4 border border-white/10">
-                        <p class="text-white whitespace-pre-line leading-relaxed">${escapeHtml(post.text)}</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <button onclick="shareToX('${post.id}')" class="platform-btn twitter-hover flex items-center justify-center gap-2 p-3 rounded-xl border border-white/20 bg-black/30 text-white hover:text-white transition-all">
-                            <i class="fab fa-twitter"></i>
-                            <span class="text-sm font-medium">Post to X</span>
-                        </button>
-                        <button onclick="copyForInstagram('${post.id}')" class="platform-btn instagram-hover flex items-center justify-center gap-2 p-3 rounded-xl border border-white/20 bg-black/30 text-white hover:text-white transition-all">
-                            <i class="fab fa-instagram"></i>
-                            <span class="text-sm font-medium">Copy for IG</span>
-                        </button>
-                        <button onclick="copyForFacebook('${post.id}')" class="platform-btn facebook-hover flex items-center justify-center gap-2 p-3 rounded-xl border border-white/20 bg-black/30 text-white hover:text-white transition-all">
-                            <i class="fab fa-facebook"></i>
-                            <span class="text-sm font-medium">Copy for FB</span>
-                        </button>
-                        <button onclick="copyForLinkedIn('${post.id}')" class="platform-btn linkedin-hover flex items-center justify-center gap-2 p-3 rounded-xl border border-white/20 bg-black/30 text-white hover:text-white transition-all">
-                            <i class="fab fa-linkedin"></i>
-                            <span class="text-sm font-medium">Copy for LI</span>
-                        </button>
-                    </div>
-
-                    <div class="mt-4 flex gap-2">
-                        <button onclick="copyText('${post.id}')" class="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 py-2 rounded-lg text-sm transition-colors">
-                            <i class="fas fa-copy mr-2"></i>Copy Text
-                        </button>
-                        <button onclick="scheduleReminder('${post.id}')" class="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 py-2 rounded-lg text-sm transition-colors">
-                            <i class="fas fa-clock mr-2"></i>Set Reminder
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function shareToX(postId) {
-            const post = generatedPosts.find(p => p.id == postId) || drafts.find(d => d.id == postId);
-            if(!post) return;
-            
-            const text = encodeURIComponent(post.text);
-            const url = `https://twitter.com/intent/tweet?text=${text}`;
-            window.open(url, '_blank', 'width=600,height=400');
-            showToast('Opening X compose window...', 'success');
-        }
-
-        function copyForInstagram(postId) {
-            const post = generatedPosts.find(p => p.id == postId) || drafts.find(d => d.id == postId);
-            if(!post) return;
-            
-            const igText = post.text + '\n\n.\n.\n.\n#instagram #instagood #viral #trending';
-            navigator.clipboard.writeText(igText);
-            showToast('Copied with Instagram formatting! Open IG app to paste.', 'success');
-        }
-
-        function copyForFacebook(postId) {
-            const post = generatedPosts.find(p => p.id == postId) || drafts.find(d => d.id == postId);
-            if(!post) return;
-            
-            const fbText = post.text;
-            navigator.clipboard.writeText(fbText);
-            showToast('Copied for Facebook! Open facebook.com to paste.', 'success');
-        }
-
-        function copyForLinkedIn(postId) {
-            const post = generatedPosts.find(p => p.id == postId) || drafts.find(d => d.id == postId);
-            if(!post) return;
-            
-            const liText = post.text + '\n\nWhat are your thoughts? Share in the comments below! 👇';
-            navigator.clipboard.writeText(liText);
-            showToast('Copied with LinkedIn formatting! Open linkedin.com to paste.', 'success');
-        }
-
-        function copyText(postId) {
-            const post = generatedPosts.find(p => p.id == postId) || drafts.find(d => d.id == postId);
-            if(!post) return;
-            
-            navigator.clipboard.writeText(post.text);
-            showToast('Copied to clipboard!', 'success');
-        }
-
-        function saveDraft(postId) {
-            const post = generatedPosts.find(p => p.id == postId);
-            if(!post) return;
-            
-            if(!drafts.find(d => d.id == postId)) {
-                drafts.push(post);
-                localStorage.setItem('viralx_drafts', JSON.stringify(drafts));
-                showToast('Saved to drafts!', 'success');
-                updateDraftCount();
-            } else {
-                showToast('Already in drafts!', 'info');
+                displayGeneratedPost(content, topic);
+                showToast('✅ Post generated!');
+            } catch (error) {
+                showToast('❌ Error: ' + error.message);
             }
+
+            document.getElementById('loadingState').classList.add('hidden');
         }
 
-        function loadDrafts() {
-            const container = document.getElementById('draftsList');
-            if(drafts.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12 text-gray-500">
-                        <i class="fas fa-inbox text-4xl mb-4 opacity-50"></i>
-                        <p>No drafts saved yet. Generate some content first!</p>
-                    </div>
-                `;
+        async function generateBlog() {
+            const topic = document.getElementById('blogTopicInput').value.trim();
+            if (!topic) {
+                showToast('❌ Please enter a blog topic!');
                 return;
             }
 
-            container.innerHTML = drafts.map(draft => `
-                <div class="glass-panel rounded-xl p-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs text-gray-500">${new Date(draft.created).toLocaleDateString()}</span>
-                        <div class="flex gap-2">
-                            <button onclick="deleteDraft('${draft.id}')" class="text-red-400 hover:text-red-300 text-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
+            if (config.aiProvider !== 'simulated' && !config.aiKey) {
+                showToast('⚠️ Please configure AI settings first!');
+                return;
+            }
+
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('generatedContent').classList.add('hidden');
+
+            try {
+                let content;
+                if (config.aiProvider === 'simulated') {
+                    await new Promise(r => setTimeout(r, 2000));
+                    content = generateSimulatedBlog(topic, config.audience);
+                } else {
+                    content = await callAIBlog(topic, config.audience);
+                }
+                
+                displayGeneratedBlog(content, topic);
+                showToast('✅ Blog generated!');
+            } catch (error) {
+                showToast('❌ Error: ' + error.message);
+            }
+
+            document.getElementById('loadingState').classList.add('hidden');
+        }
+
+        function generateSimulatedPost(topic, platform, tone) {
+            const templates = {
+                twitter: {
+                    viral: `🔥 ${topic} is changing everything!\n\nHere's what nobody is talking about:\n\n1. The old way is dead\n2. Adapt or get left behind\n3. Early adopters win big\n\nAre you ready for the shift?\n\n#${topic.replace(/\s+/g, '')} #Trending`,
+                    professional: `Excited to share insights on ${topic}!\n\nKey takeaways from my recent research:\n• Strategic approach matters\n• Data-driven decisions win\n• Continuous learning is essential\n\nWhat's your experience with ${topic}?\n\n#ProfessionalGrowth #${topic.replace(/\s+/g, '')}`,
+                    casual: `Just thinking about ${topic}... 🤔\n\nAnyone else obsessed with this right now?\n\nDrop your thoughts below! 👇\n\n#${topic.replace(/\s+/g, '')} #RandomThoughts`,
+                    story: `3 years ago, I knew nothing about ${topic}.\n\nToday, it's my main focus.\n\nHere's what changed everything 🧵\n\n[Thread 1/5] 👇`
+                },
+                instagram: {
+                    viral: `✨ ${topic} ✨\n\nSwipe to see why this matters! →\n\nDouble tap if you agree! ❤️\n\n.\n.\n.\n#${topic.replace(/\s+/g, '')} #viral #trending #instagood #explore #fyp #reels #instagram #love #follow #like #photooftheday #picoftheday #beautiful #happy #cute #fashion #style #beauty`,
+                    professional: `💼 ${topic} 💼\n\nBuilding something meaningful takes time.\n\nSave this for later! 📌\n\nWhat's your biggest challenge with ${topic}?\n\n#professional #business #success #mindset #goals #motivation #entrepreneur #career #growth #leadership`,
+                    casual: `Just vibing with ${topic} today 😌\n\nGood energy only! ✨\n\nWhat's your mood today?\n\n#goodvibes #chill #lifestyle #mood #instadaily #photography #love #happy #smile #life`,
+                    story: `From zero to hero with ${topic} 📈\n\nThe journey wasn't easy, but worth it.\n\nFull story in caption! 👇`
+                },
+                facebook: {
+                    viral: `🚨 IMPORTANT: ${topic}\n\nI need to share this with everyone.\n\nWhat do you think? Share if you agree!\n\n#${topic.replace(/\s+/g, '')}`,
+                    professional: `Professional Insights: ${topic}\n\nAfter years of experience, here are my thoughts on approaching this effectively.\n\nI'd love to hear your perspective in the comments.`,
+                    casual: `Random thoughts on ${topic}... 🤔\n\nAnyone else thinking about this lately?\n\nLet me know below!`,
+                    story: `My journey with ${topic} started 5 years ago today.\n\nSo much has changed since then. Grateful for the lessons learned!`
+                },
+                linkedin: {
+                    viral: `🎯 ${topic}: The Game Changer\n\nAfter analyzing 100+ case studies, here's what high-performers do differently:\n\n1. They focus on systems, not goals\n2. They prioritize learning over earning\n3. They build networks strategically\n\nWhich resonates most with you?\n\n#${topic.replace(/\s+/g, '')} #Leadership #CareerGrowth`,
+                    professional: `Reflecting on ${topic} and its impact on our industry.\n\nThree key trends I'm observing:\n\n1. Increased automation\n2. Focus on sustainability\n3. Remote collaboration tools\n\nWhat trends are you seeing?\n\n#IndustryInsights #ProfessionalDevelopment`,
+                    casual: `Quick thought on ${topic}:\n\nSometimes the best opportunities come from unexpected places.\n\nStay open. Stay curious.\n\n#Mindset #Growth`,
+                    story: `How ${topic} transformed my career trajectory:\n\n[2019] Started learning\n[2020] First project\n[2021] Major breakthrough\n[2024] Leading initiatives\n\nThe journey continues...`
+                }
+            };
+            
+            return templates[platform]?.[tone] || templates.twitter.viral;
+        }
+
+        function generateSimulatedBlog(topic, audience) {
+            const wordCounts = { short: 400, medium: 700, long: 1000 };
+            const length = document.getElementById('blogLength').value;
+            
+            return `# ${topic}: A Complete Guide
+
+## Introduction
+${topic} has become increasingly important in today's digital landscape. In this comprehensive article, we'll explore everything you need to know about ${topic.toLowerCase()}, from basic concepts to advanced strategies.
+
+## Why ${topic} Matters
+1. **Impact on Business**: Understanding ${topic} can significantly affect your bottom line.
+2. **Future Trends**: The landscape is constantly evolving.
+3. **Practical Applications**: Real-world examples of ${topic} in action.
+
+## Key Concepts
+- **Core Principles**: The fundamental ideas behind ${topic}
+- **Common Challenges**: What most people struggle with
+- **Best Practices**: Proven strategies that work
+
+## Step-by-Step Guide
+1. **Getting Started**: Begin with a clear understanding of your goals
+2. **Implementation**: Put theory into practice
+3. **Optimization**: Refine your approach based on results
+4. **Scaling**: Grow your ${topic.toLowerCase()} efforts
+
+## Conclusion
+${topic} offers tremendous opportunities for those willing to learn and adapt. By following the principles outlined in this guide, you'll be well-positioned to succeed.
+
+## Further Reading
+- Latest research on ${topic}
+- Case studies from industry leaders
+- Tools and resources for implementation
+
+*This article contains approximately ${wordCounts[length]} words and is written for ${audience} audience.*`;
+        }
+
+        async function callAIPost(topic, platform, tone) {
+            const platformName = platformConfig[platform].name;
+            const prompt = `Write a ${tone} social media post about "${topic}" for ${platformName}. 
+            Make it engaging and optimized for that platform. 
+            Include relevant hashtags (2-5 hashtags).
+            Keep it concise and impactful.
+            Format it nicely with line breaks where needed.`;
+
+            let response;
+            if (config.aiProvider === 'groq') {
+                response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${config.aiKey}` 
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+            } else {
+                response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${config.aiKey}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'ViralX Bot'
+                    },
+                    body: JSON.stringify({
+                        model: 'google/gemini-2.0-flash-exp:free',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+            }
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error?.message || 'API error');
+            return data.choices[0].message.content;
+        }
+
+        async function callAIBlog(topic, audience) {
+            const style = document.getElementById('blogStyle').value;
+            const length = document.getElementById('blogLength').value;
+            
+            const prompt = `Write a comprehensive blog article about "${topic}" for ${audience} audience.
+            Writing style: ${style}
+            Length: ${length} (${getWordCount(length)} words)
+            
+            Include:
+            1. Compelling headline
+            2. Introduction that hooks the reader
+            3. 3-5 main sections with subheadings
+            4. Practical tips and actionable advice
+            5. Conclusion with key takeaways
+            6. Call to action
+            
+            Format with proper markdown headings (## for main sections, ### for subsections).
+            Make it engaging, informative, and valuable.`;
+
+            let response;
+            if (config.aiProvider === 'groq') {
+                response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${config.aiKey}` 
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    })
+                });
+            } else {
+                response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${config.aiKey}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'ViralX Bot'
+                    },
+                    body: JSON.stringify({
+                        model: 'google/gemini-2.0-flash-exp:free',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    })
+                });
+            }
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error?.message || 'API error');
+            return data.choices[0].message.content;
+        }
+
+        function getWordCount(length) {
+            const counts = { short: '300-500', medium: '500-800', long: '800-1200' };
+            return counts[length] || '500-800';
+        }
+
+        function displayGeneratedPost(content, topic) {
+            const container = document.getElementById('generatedContent');
+            const platform = platformConfig[config.platform];
+            const charCount = content.length;
+            const isValid = charCount <= platform.maxLength;
+            
+            container.innerHTML = `
+                <div class="glass-panel rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">${getPlatformEmoji(config.platform)}</span>
+                            <span class="font-semibold text-white">${platform.name} Post</span>
+                            <span class="text-sm text-gray-400">${config.tone} tone</span>
+                        </div>
+                        <span class="text-sm ${isValid ? 'text-green-400' : 'text-red-400'}">
+                            ${charCount}/${platform.maxLength} characters
+                        </span>
+                    </div>
+                    
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-4">
+                        <pre class="text-white whitespace-pre-wrap leading-relaxed font-sans">${escapeHtml(content)}</pre>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button onclick="copyToClipboard('${escapeJs(content)}')" class="bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            📋 Copy
+                        </button>
+                        <button onclick="openCompose('twitter', '${escapeJs(content)}')" class="platform-btn twitter-hover bg-black/50 border border-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            🐦 Post on X
+                        </button>
+                        <button onclick="openCompose('instagram', '${escapeJs(content)}')" class="platform-btn instagram-hover bg-black/50 border border-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            📸 Post on IG
+                        </button>
+                        <button onclick="openCompose('facebook', '${escapeJs(content)}')" class="platform-btn facebook-hover bg-black/50 border border-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            👍 Post on FB
+                        </button>
+                    </div>
+
+                    <div class="flex gap-3 pt-2 border-t border-white/10">
+                        <button onclick="saveDraft('${escapeJs(content)}', '${config.platform}', 'post')" class="flex-1 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 border border-purple-500/30 py-2 rounded-lg text-sm font-medium transition-all">
+                            💾 Save Draft
+                        </button>
+                        <button onclick="saveBlog('${escapeJs(content)}', '${topic}')" class="flex-1 bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/30 py-2 rounded-lg text-sm font-medium transition-all">
+                            📝 Save as Blog
+                        </button>
+                        <button onclick="scheduleReminder('${escapeJs(content)}', '${config.platform}')" class="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 py-2 rounded-lg text-sm font-medium transition-all">
+                            ⏰ Schedule
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.classList.remove('hidden');
+            generatedPosts.push({ 
+                content, 
+                platform: config.platform, 
+                topic, 
+                timestamp: new Date(),
+                tone: config.tone,
+                type: 'post'
+            });
+        }
+
+        function displayGeneratedBlog(content, topic) {
+            const container = document.getElementById('generatedContent');
+            const style = document.getElementById('blogStyle').value;
+            const length = document.getElementById('blogLength').value;
+            const audience = config.audience;
+            
+            // Convert markdown to HTML
+            let htmlContent = content
+                .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mt-4 mb-2 text-white">$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-6 mb-3 text-white">$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold mt-4 mb-2 text-white">$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>')
+                .replace(/\n/g, '<br>');
+            
+            container.innerHTML = `
+                <div class="glass-panel rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">📝</span>
+                            <div>
+                                <span class="font-semibold text-white">Blog Article</span>
+                                <div class="flex gap-2 text-xs text-gray-400">
+                                    <span>${style} style</span>
+                                    <span>•</span>
+                                    <span>${length}</span>
+                                    <span>•</span>
+                                    <span>${audience} audience</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="copyToClipboard('${escapeJs(content)}')" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm transition-all">
+                            📋 Copy All
+                        </button>
+                    </div>
+                    
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-6 max-h-[600px] overflow-y-auto">
+                        <div class="prose prose-invert max-w-none">
+                            ${htmlContent}
                         </div>
                     </div>
-                    <p class="text-white text-sm mb-3 line-clamp-3">${escapeHtml(draft.text)}</p>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button onclick="copyToClipboard('${escapeJs(content)}')" class="bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            📋 Copy Text
+                        </button>
+                        <button onclick="downloadAsTxt('${escapeJs(content)}', '${escapeJs(topic)}')" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            💾 Download .txt
+                        </button>
+                        <button onclick="saveBlog('${escapeJs(content)}', '${topic}')" class="bg-green-600/20 hover:bg-green-600/30 text-green-400 py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            📚 Save Blog
+                        </button>
+                        <button onclick="shareBlog('${escapeJs(content)}', '${topic}')" class="bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+                            🔗 Share
+                        </button>
+                    </div>
+
+                    <div class="pt-2 border-t border-white/10">
+                        <p class="text-sm text-gray-400 text-center">
+                            Word count: ~${getWordCount(length)} words | Generated at: ${new Date().toLocaleTimeString()}
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            container.classList.remove('hidden');
+            generatedPosts.push({ 
+                content, 
+                type: 'blog',
+                topic, 
+                timestamp: new Date(),
+                style: style,
+                length: length,
+                audience: audience
+            });
+        }
+
+        function getPlatformEmoji(platform) {
+            const emojis = { twitter: '🐦', instagram: '📸', facebook: '👍', linkedin: '💼' };
+            return emojis[platform] || '📝';
+        }
+
+        // Action functions
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => showToast('✅ Copied to clipboard!'));
+        }
+
+        function downloadAsTxt(text, filename) {
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename.replace(/\s+/g, '_')}_blog.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('💾 Blog downloaded!');
+        }
+
+        function shareBlog(content, title) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: content.substring(0, 200) + '...',
+                    url: window.location.href
+                });
+            } else {
+                copyToClipboard(content);
+                showToast('📋 Blog copied! Share it anywhere.');
+            }
+        }
+
+        function openCompose(platform, text) {
+            const urls = {
+                twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
+                instagram: 'https://www.instagram.com/',
+                facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(text)}`,
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}`
+            };
+            
+            if (platform === 'instagram') {
+                copyToClipboard(text);
+                showToast('📸 Content copied! Opening Instagram...');
+                setTimeout(() => window.open(urls[platform], '_blank'), 1000);
+            } else {
+                window.open(urls[platform], '_blank', 'width=600,height=400');
+            }
+        }
+
+        function saveDraft(content, platform, type) {
+            const draft = {
+                id: Date.now(),
+                content,
+                platform,
+                type: type || 'post',
+                createdAt: new Date().toLocaleString(),
+                topic: document.getElementById('topicInput').value.trim() || 'Untitled'
+            };
+            drafts.unshift(draft);
+            localStorage.setItem('viralxDrafts', JSON.stringify(drafts));
+            updateDraftCount();
+            showToast('💾 Draft saved!');
+        }
+
+        function saveBlog(content, topic) {
+            const blog = {
+                id: Date.now(),
+                content,
+                topic: topic || 'Untitled Blog',
+                createdAt: new Date().toLocaleString(),
+                style: document.getElementById('blogStyle').value,
+                length: document.getElementById('blogLength').value,
+                audience: config.audience,
+                type: 'blog'
+            };
+            blogs.unshift(blog);
+            localStorage.setItem('viralxBlogs', JSON.stringify(blogs));
+            showToast('📚 Blog saved!');
+        }
+
+        function loadDrafts() {
+            const saved = localStorage.getItem('viralxDrafts');
+            if (saved) {
+                drafts = JSON.parse(saved);
+            }
+        }
+
+        function loadBlogs() {
+            const saved = localStorage.getItem('viralxBlogs');
+            if (saved) {
+                blogs = JSON.parse(saved);
+            }
+        }
+
+        function updateDraftCount() {
+            const count = drafts.length + blogs.length;
+            const badge = document.getElementById('draftCount');
+            badge.textContent = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
+
+        function renderDrafts() {
+            const container = document.getElementById('draftsList');
+            const allDrafts = [...drafts, ...blogs];
+            
+            if (allDrafts.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-12">No drafts saved yet. Generate content to save drafts!</p>';
+                return;
+            }
+            
+            container.innerHTML = allDrafts.map(draft => `
+                <div class="glass-panel rounded-xl p-4 schedule-item">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${draft.type === 'blog' ? '📝' : getPlatformEmoji(draft.platform)}</span>
+                            <div>
+                                <p class="text-sm text-white font-medium">${escapeHtml(draft.topic)}</p>
+                                <span class="text-xs text-gray-400">${draft.createdAt}</span>
+                                <span class="text-xs ${draft.type === 'blog' ? 'text-green-400' : 'text-blue-400'} ml-2">${draft.type === 'blog' ? 'Blog' : 'Post'}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteDraft(${draft.id}, '${draft.type}')" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
+                    </div>
+                    <pre class="text-gray-300 text-sm mb-3 line-clamp-3 font-sans">${escapeHtml(draft.content.substring(0, 200))}${draft.content.length > 200 ? '...' : ''}</pre>
                     <div class="flex gap-2">
-                        <button onclick="shareToX('${draft.id}')" class="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 py-2 rounded-lg text-xs transition-colors">
-                            <i class="fab fa-twitter mr-1"></i>Post to X
-                        </button>
-                        <button onclick="copyText('${draft.id}')" class="flex-1 bg-white/5 hover:bg-white/10 text-gray-300 py-2 rounded-lg text-xs transition-colors">
-                            <i class="fas fa-copy mr-1"></i>Copy
-                        </button>
+                        <button onclick="copyToClipboard('${escapeJs(draft.content)}')" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg text-xs transition-all">📋 Copy</button>
+                        ${draft.type === 'post' ? 
+                            `<button onclick="openCompose('${draft.platform}', '${escapeJs(draft.content)}')" class="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 py-2 rounded-lg text-xs transition-all">🚀 Post</button>` : 
+                            `<button onclick="viewBlog(${draft.id})" class="flex-1 bg-green-600/20 hover:bg-green-600/30 text-green-400 py-2 rounded-lg text-xs transition-all">📖 Read</button>`}
                     </div>
                 </div>
             `).join('');
         }
 
-        function deleteDraft(id) {
-            drafts = drafts.filter(d => d.id != id);
-            localStorage.setItem('viralx_drafts', JSON.stringify(drafts));
-            loadDrafts();
-            updateDraftCount();
-            showToast('Draft deleted', 'info');
+        function renderBlogs() {
+            const container = document.getElementById('blogsList');
+            
+            if (blogs.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-12">No blog articles saved yet. Generate a blog to see it here!</p>';
+                return;
+            }
+            
+            container.innerHTML = blogs.map(blog => `
+                <div class="glass-panel rounded-xl p-4 schedule-item">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">📝</span>
+                            <div>
+                                <p class="text-lg text-white font-bold">${escapeHtml(blog.topic)}</p>
+                                <div class="flex gap-2 text-xs text-gray-400">
+                                    <span>${blog.style}</span>
+                                    <span>•</span>
+                                    <span>${blog.length}</span>
+                                    <span>•</span>
+                                    <span>${blog.audience}</span>
+                                </div>
+                                <span class="text-xs text-gray-400">${blog.createdAt}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteBlog(${blog.id})" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
+                    </div>
+                    <pre class="text-gray-300 text-sm mb-4 line-clamp-3 font-sans">${escapeHtml(blog.content.substring(0, 300))}${blog.content.length > 300 ? '...' : ''}</pre>
+                    <div class="flex gap-2">
+                        <button onclick="copyToClipboard('${escapeJs(blog.content)}')" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg text-xs transition-all">📋 Copy</button>
+                        <button onclick="downloadAsTxt('${escapeJs(blog.content)}', '${escapeJs(blog.topic)}')" class="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 py-2 rounded-lg text-xs transition-all">💾 Download</button>
+                        <button onclick="viewBlog(${blog.id})" class="flex-1 bg-green-600/20 hover:bg-green-600/30 text-green-400 py-2 rounded-lg text-xs transition-all">📖 View</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function updateDraftCount() {
-            document.getElementById('draftCount').textContent = drafts.length;
-        }
-
-        function scheduleReminder(postId) {
-            const post = generatedPosts.find(p => p.id == postId) || drafts.find(d => d.id == postId);
-            if(!post) return;
-            
-            const bestTimes = ['8:00 AM', '12:00 PM', '6:00 PM'];
-            const time = bestTimes[Math.floor(Math.random() * bestTimes.length)];
-            
-            if('Notification' in window && Notification.permission === 'granted') {
-                setTimeout(() => {
-                    new Notification('ViralX Reminder', {
-                        body: `Time to post: "${post.text.substring(0, 50)}..."`,
-                        icon: '🚀'
-                    });
-                }, 5000);
-                showToast(`Reminder set for ${time}! (Demo: 5 seconds)`, 'success');
-            } else {
-                showToast(`Best time to post: ${time}. Save this draft!`, 'info');
-                if('Notification' in window) Notification.requestPermission();
+        function viewBlog(id) {
+            const blog = blogs.find(b => b.id === id);
+            if (blog) {
+                displayGeneratedBlog(blog.content, blog.topic);
+                switchTab('generator');
             }
         }
 
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
+        function deleteDraft(id, type) {
+            if (type === 'blog') {
+                blogs = blogs.filter(b => b.id !== id);
+                localStorage.setItem('viralxBlogs', JSON.stringify(blogs));
+            } else {
+                drafts = drafts.filter(d => d.id !== id);
+                localStorage.setItem('viralxDrafts', JSON.stringify(drafts));
+            }
+            updateDraftCount();
+            renderDrafts();
+            renderBlogs();
+            showToast('🗑️ Deleted!');
+        }
+
+        function deleteBlog(id) {
+            blogs = blogs.filter(b => b.id !== id);
+            localStorage.setItem('viralxBlogs', JSON.stringify(blogs));
+            renderBlogs();
+            showToast('🗑️ Blog deleted');
+        }
+
+        function scheduleReminder(content, platform) {
+            const bestTimes = ['8:00 AM', '12:00 PM', '6:00 PM', '9:00 PM'];
+            const randomTime = bestTimes[Math.floor(Math.random() * bestTimes.length)];
             
-            const colors = {
-                success: 'bg-green-600',
-                error: 'bg-red-600',
-                info: 'bg-blue-600'
+            const reminder = {
+                id: Date.now(),
+                content: content.substring(0, 100) + '...',
+                platform,
+                time: randomTime,
+                createdAt: new Date().toLocaleString(),
+                date: new Date().toLocaleDateString()
             };
             
-            toast.className = `${colors[type]} text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-2 transform transition-all duration-300 translate-y-10 opacity-0`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                <span class="text-sm">${message}</span>
-            `;
+            reminders.push(reminder);
+            localStorage.setItem('viralxReminders', JSON.stringify(reminders));
+            renderReminders();
+            showToast(`⏰ Reminder set for ${randomTime}!`);
+        }
+
+        function loadReminders() {
+            const saved = localStorage.getItem('viralxReminders');
+            if (saved) {
+                reminders = JSON.parse(saved);
+            }
+        }
+
+        function renderReminders() {
+            const container = document.getElementById('remindersList');
+            if (reminders.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No reminders set. Create posts and schedule them!</p>';
+                return;
+            }
+            
+            container.innerHTML = reminders.map(reminder => `
+                <div class="schedule-item flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">${getPlatformEmoji(reminder.platform)}</span>
+                        <div>
+                            <p class="text-sm text-white">${escapeHtml(reminder.content)}</p>
+                            <p class="text-xs text-gray-400">${reminder.date} at ${reminder.time}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteReminder(${reminder.id})" class="text-red-400 hover:text-red-300 text-sm">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteReminder(id) {
+            reminders = reminders.filter(r => r.id !== id);
+            localStorage.setItem('viralxReminders', JSON.stringify(reminders));
+            renderReminders();
+            showToast('🗑️ Reminder deleted');
+        }
+
+        function loadConfig() {
+            const saved = localStorage.getItem('viralxConfig');
+            if (saved) {
+                try {
+                    config = JSON.parse(saved);
+                    document.getElementById('aiProvider').value = config.aiProvider || 'groq';
+                    document.getElementById('aiApiKey').value = config.aiKey || '';
+                    document.getElementById('defaultPlatform').value = config.defaultPlatform || 'twitter';
+                    document.getElementById('defaultTone').value = config.defaultTone || 'viral';
+                    
+                    // Apply defaults
+                    config.platform = config.platform || config.defaultPlatform;
+                    config.tone = config.tone || config.defaultTone;
+                    config.contentType = config.contentType || 'post';
+                    
+                    switchAIProvider();
+                    selectPlatform(config.platform);
+                    selectTone(config.tone);
+                    selectContentType(config.contentType);
+                    
+                    showToast('✅ Settings loaded!');
+                } catch (e) {
+                    console.error('Error loading config:', e);
+                }
+            }
+        }
+
+        function saveSettings() {
+            config.defaultPlatform = document.getElementById('defaultPlatform').value;
+            config.defaultTone = document.getElementById('defaultTone').value;
+            
+            localStorage.setItem('viralxConfig', JSON.stringify(config));
+            showToast('✅ Settings saved!');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL your drafts, blogs, reminders, and settings. Are you sure?')) {
+                localStorage.removeItem('viralxDrafts');
+                localStorage.removeItem('viralxBlogs');
+                localStorage.removeItem('viralxReminders');
+                localStorage.removeItem('viralxConfig');
+                
+                drafts = [];
+                blogs = [];
+                reminders = [];
+                config = {
+                    aiProvider: 'groq',
+                    aiKey: '',
+                    platform: 'twitter',
+                    tone: 'viral',
+                    defaultPlatform: 'twitter',
+                    defaultTone: 'viral',
+                    contentType: 'post',
+                    audience: 'general'
+                };
+                
+                updateDraftCount();
+                renderDrafts();
+                renderBlogs();
+                renderReminders();
+                loadConfig();
+                
+                showToast('🗑️ All data cleared!');
+            }
+        }
+
+        // Utility functions
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast glass-panel px-4 py-3 rounded-lg text-sm flex items-center gap-2';
+            toast.innerHTML = message;
             
             container.appendChild(toast);
             
             setTimeout(() => {
-                toast.classList.remove('translate-y-10', 'opacity-0');
-            }, 100);
-            
-            setTimeout(() => {
-                toast.classList.add('translate-y-10', 'opacity-0');
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
                 setTimeout(() => toast.remove(), 300);
-            }, 4000);
+            }, 3000);
         }
 
         function escapeHtml(text) {
@@ -643,14 +1267,35 @@
             return div.innerHTML;
         }
 
-        // Initialize
-        setTone('viral');
-        updateDraftCount();
-        
-        // Request notification permission
-        if('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
+        function escapeJs(text) {
+            return text
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
         }
+
+        // Initialize settings form
+        document.getElementById('defaultPlatform').addEventListener('change', saveSettings);
+        document.getElementById('defaultTone').addEventListener('change', saveSettings);
+        
+        // Add enter key support for inputs
+        document.getElementById('topicInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && config.contentType === 'post') {
+                generateContent();
+            }
+        });
+        
+        document.getElementById('blogTopicInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && config.contentType === 'blog') {
+                generateContent();
+            }
+        });
+
+        // Initialize
+        switchAIProvider();
+        selectContentType('post');
     </script>
 </body>
 </html>

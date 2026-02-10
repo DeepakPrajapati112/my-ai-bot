@@ -65,7 +65,7 @@
             <!-- Hero -->
             <div class="text-center space-y-2 mb-8">
                 <h1 class="text-4xl md:text-5xl font-bold brand-font">Social<span class="gradient-text">AI</span> Assistant</h1>
-                <p class="text-gray-400">AI-powered social media content creation with attachment support</p>
+                <p class="text-gray-400">Your conversational AI assistant for social media and general questions</p>
             </div>
 
             <!-- Chat Container -->
@@ -80,13 +80,14 @@
                             <div class="glass-panel rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
                                 <p class="text-white">👋 Hi! I'm your SocialAI Assistant. I can help you with:</p>
                                 <ul class="text-gray-300 text-sm mt-2 space-y-1">
-                                    <li>• Generate viral tweets & posts</li>
-                                    <li>• Create social media content</li>
-                                    <li>• Schedule posts</li>
+                                    <li>• Generate viral tweets & posts for social media</li>
+                                    <li>• Answer general questions and have conversations</li>
+                                    <li>• Create social media content strategies</li>
                                     <li>• Analyze uploaded content</li>
-                                    <li>• Write blog articles</li>
+                                    <li>• Write blog articles and captions</li>
+                                    <li>• Provide advice on social media marketing</li>
                                 </ul>
-                                <p class="text-gray-400 text-sm mt-3">Try asking: "Generate 3 viral tweets about AI"</p>
+                                <p class="text-gray-400 text-sm mt-3">Try asking: "What's the capital of France?" or "Generate 3 viral tweets about AI"</p>
                             </div>
                         </div>
                     </div>
@@ -114,7 +115,7 @@
                                 <textarea 
                                     id="userInput" 
                                     rows="2" 
-                                    placeholder="Ask me to generate tweets, posts, or upload content for analysis..." 
+                                    placeholder="Ask me anything - general questions or social media content requests..." 
                                     class="w-full bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors resize-none"
                                     onkeydown="handleKeyDown(event)"
                                     oninput="autoResize(this)"
@@ -132,6 +133,9 @@
                                         </button>
                                         <button onclick="quickPrompt('Create a social media post about')" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors" title="Quick post prompt">
                                             📱 Post
+                                        </button>
+                                        <button onclick="quickPrompt('Answer this question: ')" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors" title="General question">
+                                            ❓ Question
                                         </button>
                                     </div>
                                     <button onclick="sendMessage()" id="sendBtn" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-all">
@@ -172,19 +176,6 @@
                     <div class="glass-panel rounded-2xl p-5">
                         <h3 class="font-semibold mb-4 text-white">⚙️ Generation Settings</h3>
                         <div class="space-y-4">
-                            <!-- ADDED: Generative AI Option -->
-                            <div>
-                                <label class="block text-xs text-gray-400 mb-2">Generative AI</label>
-                                <select id="genAI" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
-                                    <option value="groq">Groq (Fast & Free)</option>
-                                    <option value="openrouter">OpenRouter (Free)</option>
-                                    <option value="simulated">Simulated (No API)</option>
-                                    <option value="chatgpt">ChatGPT</option>
-                                    <option value="claude">Claude</option>
-                                    <option value="gemini">Gemini</option>
-                                </select>
-                            </div>
-                            
                             <div>
                                 <label class="block text-xs text-gray-400 mb-2">Platform</label>
                                 <select id="genPlatform" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
@@ -432,17 +423,16 @@
             const platform = document.getElementById('genPlatform').value;
             const tone = document.getElementById('genTone').value;
             const count = document.getElementById('genCount').value;
-            const generativeAI = document.getElementById('genAI').value;
             
             let prompt = '';
             if (action.includes('tweet')) {
-                prompt = `Generate ${count} ${tone} tweets about [topic] for ${platform} using ${generativeAI}`;
+                prompt = `Generate ${count} ${tone} tweets about [topic] for ${platform}`;
             } else if (action.includes('Instagram')) {
-                prompt = `Create a ${tone} Instagram post about [topic] using ${generativeAI}`;
+                prompt = `Create a ${tone} Instagram post about [topic]`;
             } else if (action.includes('LinkedIn')) {
-                prompt = `Write a ${tone} LinkedIn article about [topic] using ${generativeAI}`;
+                prompt = `Write a ${tone} LinkedIn article about [topic]`;
             } else if (action.includes('Schedule')) {
-                prompt = `Create a weekly posting schedule for [topic] on ${platform} using ${generativeAI}`;
+                prompt = `Create a weekly posting schedule for [topic] on ${platform}`;
             }
             
             document.getElementById('userInput').value = prompt;
@@ -483,8 +473,10 @@
                 // Add AI response to chat
                 addMessageToChat(response, 'assistant');
                 
-                // Process and save generated content
-                processAIResponse(response, message);
+                // Only process as social media content if it's clearly a social media request
+                if (isSocialMediaRequest(message)) {
+                    processAIResponse(response, message);
+                }
                 
                 // Save chat history
                 saveChatHistory();
@@ -615,80 +607,115 @@
             document.getElementById('fileUpload').value = '';
         }
 
-        // AI Functions
+        // AI Functions - Now conversational
         async function getAIResponse(message, file = null) {
-            const platform = document.getElementById('genPlatform').value;
-            const tone = document.getElementById('genTone').value;
-            const count = document.getElementById('genCount').value;
-            const generativeAI = document.getElementById('genAI').value;
+            // First, determine if this is a social media request or general question
+            const isSocialMedia = isSocialMediaRequest(message);
             
-            // Set the AI provider based on Generation Settings selection
-            const selectedAI = generativeAI === 'simulated' ? 'simulated' : 
-                              generativeAI === 'chatgpt' ? 'openrouter' : // Map to available options
-                              generativeAI === 'claude' ? 'openrouter' : 
-                              generativeAI === 'gemini' ? 'openrouter' :
-                              generativeAI;
-            
-            if (selectedAI === 'simulated') {
+            if (config.aiProvider === 'simulated') {
                 await new Promise(r => setTimeout(r, 1000));
-                return getSimulatedResponse(message, platform, tone, count);
+                return getSimulatedResponse(message, isSocialMedia);
             }
             
-            // Build prompt based on user request
-            let prompt = message;
+            // Build appropriate system prompt based on request type
+            let systemPrompt = '';
+            let userPrompt = message;
             
-            // Enhance prompt based on context
-            if (message.toLowerCase().includes('tweet') || message.toLowerCase().includes('twitter')) {
-                prompt = `Generate ${count} separate ${tone} tweets about: ${message}\n\nFormat each tweet clearly with number (1., 2., 3.) and include relevant hashtags.`;
-            } else if (message.toLowerCase().includes('instagram') || message.toLowerCase().includes('post')) {
-                prompt = `Create a ${tone} social media post for ${platform} about: ${message}\n\nInclude engaging copy and relevant hashtags.`;
-            } else if (message.toLowerCase().includes('linkedin') || message.toLowerCase().includes('article')) {
-                prompt = `Write a ${tone} professional article for LinkedIn about: ${message}\n\nInclude headings and key points.`;
+            if (isSocialMedia) {
+                const platform = document.getElementById('genPlatform').value;
+                const tone = document.getElementById('genTone').value;
+                const count = document.getElementById('genCount').value;
+                
+                systemPrompt = 'You are a social media expert assistant. Generate separate, distinct social media posts when asked for multiple items. Format clearly with numbers and line breaks. Include relevant hashtags.';
+                
+                // Enhance prompt for social media requests
+                if (message.toLowerCase().includes('tweet') || message.toLowerCase().includes('twitter')) {
+                    userPrompt = `Generate ${count} separate ${tone} tweets about: ${message}\n\nFormat each tweet clearly with number (1., 2., 3.) and include relevant hashtags.`;
+                } else if (message.toLowerCase().includes('instagram') || message.toLowerCase().includes('post')) {
+                    userPrompt = `Create a ${tone} social media post for ${platform} about: ${message}\n\nInclude engaging copy and relevant hashtags.`;
+                } else if (message.toLowerCase().includes('linkedin') || message.toLowerCase().includes('article')) {
+                    userPrompt = `Write a ${tone} professional article for LinkedIn about: ${message}\n\nInclude headings and key points.`;
+                }
+            } else {
+                // General conversational AI
+                systemPrompt = 'You are a helpful AI assistant that can answer general questions and also help with social media content creation. Be friendly, knowledgeable, and helpful. If the user asks for social media content, provide it. Otherwise, answer their questions conversationally.';
             }
             
             if (file) {
-                prompt += `\n\nI've uploaded a file named "${file.name}". Consider its content in your response.`;
+                userPrompt += `\n\nI've uploaded a file named "${file.name}". Consider its content in your response.`;
             }
             
-            // Add which AI is being used in the response
-            prompt += `\n\n(Using ${generativeAI} AI)`;
-            
-            if (selectedAI === 'groq') {
-                return await callGroqAPI(prompt);
+            if (config.aiProvider === 'groq') {
+                return await callGroqAPI(systemPrompt, userPrompt);
             } else {
-                return await callOpenRouterAPI(prompt, generativeAI);
+                return await callOpenRouterAPI(systemPrompt, userPrompt);
             }
         }
 
-        function getSimulatedResponse(message, platform, tone, count) {
-            const topics = ['AI', 'Technology', 'Business', 'Health', 'Travel', 'Food'];
-            const topic = topics[Math.floor(Math.random() * topics.length)];
-            const generativeAI = document.getElementById('genAI').value;
+        function isSocialMediaRequest(message) {
+            const lowerMessage = message.toLowerCase();
+            const socialMediaKeywords = [
+                'tweet', 'twitter', 'x post', 'x/twitter',
+                'instagram', 'insta', 'ig', 'reel',
+                'facebook', 'fb', 'post',
+                'linkedin', 'linkedin post', 'linkedin article',
+                'social media', 'social media post',
+                'generate', 'create', 'write',
+                'hashtag', '#', 'caption',
+                'viral', 'trending', 'engagement',
+                'content calendar', 'schedule post'
+            ];
             
-            if (message.toLowerCase().includes('tweet') || message.toLowerCase().includes('twitter')) {
-                return `Here are ${count} ${tone} tweets about ${topic} (Generated with ${generativeAI}):\n\n` +
-                       `1. 🔥 ${topic} is changing the game! The future is here and it's exciting. #${topic} #Future #Tech\n\n` +
-                       `2. Just read an amazing article about ${topic.toLowerCase()} innovations. Mind = blown! 🤯 #Innovation #${topic}\n\n` +
-                       `3. ${count === '3' ? '3' : 'Another'} thought: We need to embrace ${topic.toLowerCase()} to stay ahead. Who's with me? 💪 #Business #${topic}\n\n` +
-                       `Which one resonates most? Let me know!`;
-            } else if (message.toLowerCase().includes('instagram')) {
-                return `📸 ${tone.charAt(0).toUpperCase() + tone.slice(1)} Instagram Post (Generated with ${generativeAI}):\n\n` +
-                       `Living my best ${topic.toLowerCase()} life! 🌟\n\n` +
-                       `✨ Embracing new opportunities\n` +
-                       `💡 Learning every day\n` +
-                       `🚀 Growing and evolving\n\n` +
-                       `#${topic} #Instagram #SocialMedia #Content #${tone}`;
+            // Check for social media specific requests
+            return socialMediaKeywords.some(keyword => lowerMessage.includes(keyword));
+        }
+
+        function getSimulatedResponse(message, isSocialMedia) {
+            if (isSocialMedia) {
+                const platform = document.getElementById('genPlatform').value;
+                const tone = document.getElementById('genTone').value;
+                const count = document.getElementById('genCount').value;
+                const topics = ['AI', 'Technology', 'Business', 'Health', 'Travel', 'Food'];
+                const topic = topics[Math.floor(Math.random() * topics.length)];
+                
+                if (message.toLowerCase().includes('tweet') || message.toLowerCase().includes('twitter')) {
+                    return `Here are ${count} ${tone} tweets about ${topic}:\n\n` +
+                           `1. 🔥 ${topic} is changing the game! The future is here and it's exciting. #${topic} #Future #Tech\n\n` +
+                           `2. Just read an amazing article about ${topic.toLowerCase()} innovations. Mind = blown! 🤯 #Innovation #${topic}\n\n` +
+                           `3. ${count === '3' ? '3' : 'Another'} thought: We need to embrace ${topic.toLowerCase()} to stay ahead. Who's with me? 💪 #Business #${topic}\n\n` +
+                           `Which one resonates most? Let me know!`;
+                } else if (message.toLowerCase().includes('instagram')) {
+                    return `📸 ${tone.charAt(0).toUpperCase() + tone.slice(1)} Instagram Post:\n\n` +
+                           `Living my best ${topic.toLowerCase()} life! 🌟\n\n` +
+                           `✨ Embracing new opportunities\n` +
+                           `💡 Learning every day\n` +
+                           `🚀 Growing and evolving\n\n` +
+                           `#${topic} #Instagram #SocialMedia #Content #${tone}`;
+                } else {
+                    return `I understand you're asking about "${message}". Here's what I think:\n\n` +
+                           `• This is a great topic for ${platform}\n` +
+                           `• Using a ${tone} tone would work well\n` +
+                           `• Consider posting at peak times for better engagement\n` +
+                           `• Add relevant hashtags to reach more people\n\n` +
+                           `Would you like me to generate specific content for you?`;
+                }
             } else {
-                return `I understand you're asking about "${message}". Here's what I think (Generated with ${generativeAI}):\n\n` +
-                       `• This is a great topic for ${platform}\n` +
-                       `• Using a ${tone} tone would work well\n` +
-                       `• Consider posting at peak times for better engagement\n` +
-                       `• Add relevant hashtags to reach more people\n\n` +
-                       `Would you like me to generate specific content for you?`;
+                // General conversation response
+                const responses = [
+                    `I understand you're asking about "${message}". That's a great question! While I specialize in social media content, I can help with general questions too. Could you tell me more about what you'd like to know?`,
+                    
+                    `Thanks for your question about "${message}"! I'm here to help with both social media content and general information. What specifically would you like to learn about this topic?`,
+                    
+                    `Interesting question about "${message}"! I can definitely help with that. Is this related to social media or are you looking for general information?`,
+                    
+                    `I'd be happy to help with "${message}"! Could you provide a bit more context so I can give you the most helpful response?`
+                ];
+                
+                return responses[Math.floor(Math.random() * responses.length)];
             }
         }
 
-        async function callGroqAPI(prompt) {
+        async function callGroqAPI(systemPrompt, userPrompt) {
             if (!config.aiKey) throw new Error('Please configure your API key in Settings');
             
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -702,11 +729,11 @@
                     messages: [
                         {
                             role: 'system',
-                            content: 'You are a social media expert assistant. Generate separate, distinct social media posts when asked for multiple items. Format clearly with numbers and line breaks. Include relevant hashtags.'
+                            content: systemPrompt
                         },
                         {
                             role: 'user',
-                            content: prompt
+                            content: userPrompt
                         }
                     ],
                     temperature: 0.7,
@@ -719,19 +746,8 @@
             return data.choices[0].message.content;
         }
 
-        async function callOpenRouterAPI(prompt, generativeAI) {
+        async function callOpenRouterAPI(systemPrompt, userPrompt) {
             if (!config.aiKey) throw new Error('Please configure your API key in Settings');
-            
-            // Map generative AI selection to appropriate model
-            let model = 'google/gemini-2.0-flash-exp:free'; // Default
-            
-            if (generativeAI === 'chatgpt') {
-                model = 'openai/gpt-3.5-turbo';
-            } else if (generativeAI === 'claude') {
-                model = 'anthropic/claude-3-haiku';
-            } else if (generativeAI === 'gemini') {
-                model = 'google/gemini-2.0-flash-exp:free';
-            }
             
             const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
@@ -742,15 +758,15 @@
                     'X-Title': 'SocialAI Assistant'
                 },
                 body: JSON.stringify({
-                    model: model,
+                    model: 'google/gemini-2.0-flash-exp:free',
                     messages: [
                         {
                             role: 'system',
-                            content: 'You are a social media expert assistant. Generate separate, distinct social media posts when asked for multiple items. Format clearly with numbers and line breaks. Include relevant hashtags.'
+                            content: systemPrompt
                         },
                         {
                             role: 'user',
-                            content: prompt
+                            content: userPrompt
                         }
                     ],
                     temperature: 0.7,
@@ -764,11 +780,10 @@
         }
 
         function processAIResponse(response, userMessage) {
-            // Extract tweets/posts from response
+            // Only process as social media content if it contains numbered items (tweets/posts)
             const lines = response.split('\n');
             const platform = document.getElementById('genPlatform').value;
             const tone = document.getElementById('genTone').value;
-            const generativeAI = document.getElementById('genAI').value;
             
             // Look for numbered items (tweets)
             const tweetRegex = /^\d+[\.\)]\s*(.+)/;
@@ -778,7 +793,7 @@
                 if (tweetRegex.test(line.trim())) {
                     // Save previous tweet if exists
                     if (currentTweet) {
-                        saveGeneratedTweet(currentTweet, platform, tone, userMessage, generativeAI);
+                        saveGeneratedTweet(currentTweet, platform, tone, userMessage);
                     }
                     currentTweet = line.trim();
                 } else if (currentTweet && line.trim()) {
@@ -788,26 +803,25 @@
             
             // Save last tweet
             if (currentTweet) {
-                saveGeneratedTweet(currentTweet, platform, tone, userMessage, generativeAI);
+                saveGeneratedTweet(currentTweet, platform, tone, userMessage);
             }
             
-            // If no numbered tweets found, save as general post
-            if (!currentTweet && response.trim()) {
-                saveGeneratedPost(response, platform, tone, userMessage, generativeAI);
+            // If no numbered tweets found but response looks like social media content, save as post
+            if (!currentTweet && response.trim() && (response.includes('#') || response.toLowerCase().includes('hashtag'))) {
+                saveGeneratedPost(response, platform, tone, userMessage);
             }
             
             // Update UI
             updateStats();
         }
 
-        function saveGeneratedTweet(content, platform, tone, topic, generativeAI) {
+        function saveGeneratedTweet(content, platform, tone, topic) {
             const tweet = {
                 id: Date.now(),
                 content: content,
                 platform: platform,
                 tone: tone,
                 topic: topic || 'Untitled',
-                generativeAI: generativeAI,
                 createdAt: new Date().toLocaleString(),
                 type: 'tweet'
             };
@@ -816,14 +830,13 @@
             localStorage.setItem('socialAITweets', JSON.stringify(generatedTweets));
         }
 
-        function saveGeneratedPost(content, platform, tone, topic, generativeAI) {
+        function saveGeneratedPost(content, platform, tone, topic) {
             const post = {
                 id: Date.now(),
                 content: content,
                 platform: platform,
                 tone: tone,
                 topic: topic || 'Untitled',
-                generativeAI: generativeAI,
                 createdAt: new Date().toLocaleString(),
                 type: 'post'
             };
@@ -852,8 +865,6 @@
                                     <span>${tweet.platform}</span>
                                     <span>•</span>
                                     <span>${tweet.tone}</span>
-                                    <span>•</span>
-                                    <span>${tweet.generativeAI || 'AI'}</span>
                                     <span>•</span>
                                     <span>${tweet.createdAt}</span>
                                 </div>
@@ -900,8 +911,6 @@
                                     <span>${post.platform}</span>
                                     <span>•</span>
                                     <span>${post.tone}</span>
-                                    <span>•</span>
-                                    <span>${post.generativeAI || 'AI'}</span>
                                     <span>•</span>
                                     <span>${post.createdAt}</span>
                                 </div>
@@ -976,14 +985,12 @@
         function scheduleItem(content, platform, type) {
             const times = ['8:00 AM', '12:00 PM', '3:00 PM', '6:00 PM', '9:00 PM'];
             const randomTime = times[Math.floor(Math.random() * times.length)];
-            const generativeAI = document.getElementById('genAI').value;
             
             const scheduled = {
                 id: Date.now(),
                 content: content.substring(0, 200) + (content.length > 200 ? '...' : ''),
                 platform: platform,
                 type: type,
-                generativeAI: generativeAI,
                 time: randomTime,
                 date: new Date().toLocaleDateString(),
                 createdAt: new Date().toLocaleString()
@@ -993,7 +1000,7 @@
             localStorage.setItem('socialAIScheduled', JSON.stringify(scheduledItems));
             updateStats();
             renderScheduled();
-            showToast(`⏰ Scheduled for ${randomTime} using ${generativeAI}`);
+            showToast(`⏰ Scheduled for ${randomTime}`);
         }
 
         function deleteTweet(id) {
@@ -1172,7 +1179,7 @@
                     <div class="chat-message flex gap-3 items-start">
                         <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-bold">AI</div>
                         <div class="glass-panel rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
-                            <p class="text-white">👋 Hi! I'm your SocialAI Assistant. Ready to help you create amazing social media content!</p>
+                            <p class="text-white">👋 Hi! I'm your SocialAI Assistant. Ready to help you with social media content and answer your questions!</p>
                         </div>
                     </div>
                 `;

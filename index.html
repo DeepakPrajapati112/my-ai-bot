@@ -172,6 +172,19 @@
                     <div class="glass-panel rounded-2xl p-5">
                         <h3 class="font-semibold mb-4 text-white">⚙️ Generation Settings</h3>
                         <div class="space-y-4">
+                            <!-- ADDED: Generative AI Option -->
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-2">Generative AI</label>
+                                <select id="genAI" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                                    <option value="groq">Groq (Fast & Free)</option>
+                                    <option value="openrouter">OpenRouter (Free)</option>
+                                    <option value="simulated">Simulated (No API)</option>
+                                    <option value="chatgpt">ChatGPT</option>
+                                    <option value="claude">Claude</option>
+                                    <option value="gemini">Gemini</option>
+                                </select>
+                            </div>
+                            
                             <div>
                                 <label class="block text-xs text-gray-400 mb-2">Platform</label>
                                 <select id="genPlatform" class="w-full bg-black/50 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
@@ -419,16 +432,17 @@
             const platform = document.getElementById('genPlatform').value;
             const tone = document.getElementById('genTone').value;
             const count = document.getElementById('genCount').value;
+            const generativeAI = document.getElementById('genAI').value;
             
             let prompt = '';
             if (action.includes('tweet')) {
-                prompt = `Generate ${count} ${tone} tweets about [topic] for ${platform}`;
+                prompt = `Generate ${count} ${tone} tweets about [topic] for ${platform} using ${generativeAI}`;
             } else if (action.includes('Instagram')) {
-                prompt = `Create a ${tone} Instagram post about [topic]`;
+                prompt = `Create a ${tone} Instagram post about [topic] using ${generativeAI}`;
             } else if (action.includes('LinkedIn')) {
-                prompt = `Write a ${tone} LinkedIn article about [topic]`;
+                prompt = `Write a ${tone} LinkedIn article about [topic] using ${generativeAI}`;
             } else if (action.includes('Schedule')) {
-                prompt = `Create a weekly posting schedule for [topic] on ${platform}`;
+                prompt = `Create a weekly posting schedule for [topic] on ${platform} using ${generativeAI}`;
             }
             
             document.getElementById('userInput').value = prompt;
@@ -606,8 +620,16 @@
             const platform = document.getElementById('genPlatform').value;
             const tone = document.getElementById('genTone').value;
             const count = document.getElementById('genCount').value;
+            const generativeAI = document.getElementById('genAI').value;
             
-            if (config.aiProvider === 'simulated') {
+            // Set the AI provider based on Generation Settings selection
+            const selectedAI = generativeAI === 'simulated' ? 'simulated' : 
+                              generativeAI === 'chatgpt' ? 'openrouter' : // Map to available options
+                              generativeAI === 'claude' ? 'openrouter' : 
+                              generativeAI === 'gemini' ? 'openrouter' :
+                              generativeAI;
+            
+            if (selectedAI === 'simulated') {
                 await new Promise(r => setTimeout(r, 1000));
                 return getSimulatedResponse(message, platform, tone, count);
             }
@@ -628,32 +650,36 @@
                 prompt += `\n\nI've uploaded a file named "${file.name}". Consider its content in your response.`;
             }
             
-            if (config.aiProvider === 'groq') {
+            // Add which AI is being used in the response
+            prompt += `\n\n(Using ${generativeAI} AI)`;
+            
+            if (selectedAI === 'groq') {
                 return await callGroqAPI(prompt);
             } else {
-                return await callOpenRouterAPI(prompt);
+                return await callOpenRouterAPI(prompt, generativeAI);
             }
         }
 
         function getSimulatedResponse(message, platform, tone, count) {
             const topics = ['AI', 'Technology', 'Business', 'Health', 'Travel', 'Food'];
             const topic = topics[Math.floor(Math.random() * topics.length)];
+            const generativeAI = document.getElementById('genAI').value;
             
             if (message.toLowerCase().includes('tweet') || message.toLowerCase().includes('twitter')) {
-                return `Here are ${count} ${tone} tweets about ${topic}:\n\n` +
+                return `Here are ${count} ${tone} tweets about ${topic} (Generated with ${generativeAI}):\n\n` +
                        `1. 🔥 ${topic} is changing the game! The future is here and it's exciting. #${topic} #Future #Tech\n\n` +
                        `2. Just read an amazing article about ${topic.toLowerCase()} innovations. Mind = blown! 🤯 #Innovation #${topic}\n\n` +
                        `3. ${count === '3' ? '3' : 'Another'} thought: We need to embrace ${topic.toLowerCase()} to stay ahead. Who's with me? 💪 #Business #${topic}\n\n` +
                        `Which one resonates most? Let me know!`;
             } else if (message.toLowerCase().includes('instagram')) {
-                return `📸 ${tone.charAt(0).toUpperCase() + tone.slice(1)} Instagram Post:\n\n` +
+                return `📸 ${tone.charAt(0).toUpperCase() + tone.slice(1)} Instagram Post (Generated with ${generativeAI}):\n\n` +
                        `Living my best ${topic.toLowerCase()} life! 🌟\n\n` +
                        `✨ Embracing new opportunities\n` +
                        `💡 Learning every day\n` +
                        `🚀 Growing and evolving\n\n` +
                        `#${topic} #Instagram #SocialMedia #Content #${tone}`;
             } else {
-                return `I understand you're asking about "${message}". Here's what I think:\n\n` +
+                return `I understand you're asking about "${message}". Here's what I think (Generated with ${generativeAI}):\n\n` +
                        `• This is a great topic for ${platform}\n` +
                        `• Using a ${tone} tone would work well\n` +
                        `• Consider posting at peak times for better engagement\n` +
@@ -693,8 +719,19 @@
             return data.choices[0].message.content;
         }
 
-        async function callOpenRouterAPI(prompt) {
+        async function callOpenRouterAPI(prompt, generativeAI) {
             if (!config.aiKey) throw new Error('Please configure your API key in Settings');
+            
+            // Map generative AI selection to appropriate model
+            let model = 'google/gemini-2.0-flash-exp:free'; // Default
+            
+            if (generativeAI === 'chatgpt') {
+                model = 'openai/gpt-3.5-turbo';
+            } else if (generativeAI === 'claude') {
+                model = 'anthropic/claude-3-haiku';
+            } else if (generativeAI === 'gemini') {
+                model = 'google/gemini-2.0-flash-exp:free';
+            }
             
             const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
@@ -705,7 +742,7 @@
                     'X-Title': 'SocialAI Assistant'
                 },
                 body: JSON.stringify({
-                    model: 'google/gemini-2.0-flash-exp:free',
+                    model: model,
                     messages: [
                         {
                             role: 'system',
@@ -731,6 +768,7 @@
             const lines = response.split('\n');
             const platform = document.getElementById('genPlatform').value;
             const tone = document.getElementById('genTone').value;
+            const generativeAI = document.getElementById('genAI').value;
             
             // Look for numbered items (tweets)
             const tweetRegex = /^\d+[\.\)]\s*(.+)/;
@@ -740,7 +778,7 @@
                 if (tweetRegex.test(line.trim())) {
                     // Save previous tweet if exists
                     if (currentTweet) {
-                        saveGeneratedTweet(currentTweet, platform, tone, userMessage);
+                        saveGeneratedTweet(currentTweet, platform, tone, userMessage, generativeAI);
                     }
                     currentTweet = line.trim();
                 } else if (currentTweet && line.trim()) {
@@ -750,25 +788,26 @@
             
             // Save last tweet
             if (currentTweet) {
-                saveGeneratedTweet(currentTweet, platform, tone, userMessage);
+                saveGeneratedTweet(currentTweet, platform, tone, userMessage, generativeAI);
             }
             
             // If no numbered tweets found, save as general post
             if (!currentTweet && response.trim()) {
-                saveGeneratedPost(response, platform, tone, userMessage);
+                saveGeneratedPost(response, platform, tone, userMessage, generativeAI);
             }
             
             // Update UI
             updateStats();
         }
 
-        function saveGeneratedTweet(content, platform, tone, topic) {
+        function saveGeneratedTweet(content, platform, tone, topic, generativeAI) {
             const tweet = {
                 id: Date.now(),
                 content: content,
                 platform: platform,
                 tone: tone,
                 topic: topic || 'Untitled',
+                generativeAI: generativeAI,
                 createdAt: new Date().toLocaleString(),
                 type: 'tweet'
             };
@@ -777,13 +816,14 @@
             localStorage.setItem('socialAITweets', JSON.stringify(generatedTweets));
         }
 
-        function saveGeneratedPost(content, platform, tone, topic) {
+        function saveGeneratedPost(content, platform, tone, topic, generativeAI) {
             const post = {
                 id: Date.now(),
                 content: content,
                 platform: platform,
                 tone: tone,
                 topic: topic || 'Untitled',
+                generativeAI: generativeAI,
                 createdAt: new Date().toLocaleString(),
                 type: 'post'
             };
@@ -812,6 +852,8 @@
                                     <span>${tweet.platform}</span>
                                     <span>•</span>
                                     <span>${tweet.tone}</span>
+                                    <span>•</span>
+                                    <span>${tweet.generativeAI || 'AI'}</span>
                                     <span>•</span>
                                     <span>${tweet.createdAt}</span>
                                 </div>
@@ -858,6 +900,8 @@
                                     <span>${post.platform}</span>
                                     <span>•</span>
                                     <span>${post.tone}</span>
+                                    <span>•</span>
+                                    <span>${post.generativeAI || 'AI'}</span>
                                     <span>•</span>
                                     <span>${post.createdAt}</span>
                                 </div>
@@ -932,12 +976,14 @@
         function scheduleItem(content, platform, type) {
             const times = ['8:00 AM', '12:00 PM', '3:00 PM', '6:00 PM', '9:00 PM'];
             const randomTime = times[Math.floor(Math.random() * times.length)];
+            const generativeAI = document.getElementById('genAI').value;
             
             const scheduled = {
                 id: Date.now(),
                 content: content.substring(0, 200) + (content.length > 200 ? '...' : ''),
                 platform: platform,
                 type: type,
+                generativeAI: generativeAI,
                 time: randomTime,
                 date: new Date().toLocaleDateString(),
                 createdAt: new Date().toLocaleString()
@@ -947,7 +993,7 @@
             localStorage.setItem('socialAIScheduled', JSON.stringify(scheduledItems));
             updateStats();
             renderScheduled();
-            showToast(`⏰ Scheduled for ${randomTime}`);
+            showToast(`⏰ Scheduled for ${randomTime} using ${generativeAI}`);
         }
 
         function deleteTweet(id) {
